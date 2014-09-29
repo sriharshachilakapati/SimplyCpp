@@ -199,6 +199,11 @@ namespace SimplyCpp
 				reader.Close();
 				reader.Dispose();
 				
+				// TODO: Find a better solution than this hack
+				fastColoredTextBox1.SelectAll();
+				fastColoredTextBox1.Focus();
+				SendKeys.SendWait("{DEL}");
+				
 				fastColoredTextBox1.Text = SavedCode;
 				
 				highlighter.HighlightAll();
@@ -312,6 +317,18 @@ namespace SimplyCpp
 			}
 		}
 		
+		void WordWrapClick(object sender, EventArgs e)
+		{
+			MenuItem item = sender as MenuItem;
+			
+			if (item.Checked)
+				fastColoredTextBox1.WordWrap = false;
+			else
+				fastColoredTextBox1.WordWrap = true;
+			
+			item.Checked = !item.Checked;
+		}
+		
 		void AboutClick(object sender, EventArgs e)
 		{
 			new AboutForm();
@@ -357,6 +374,7 @@ namespace SimplyCpp
             mainMenu1.MenuItems.Add(item);
             
             AddMenuItem("Change Font", Shortcut.None, item, new EventHandler(ChangeFontClick), false);
+            AddMenuItem("Wordwrap", Shortcut.None, item, new EventHandler(WordWrapClick), false);
             
             item = new MenuItem("Help");
             mainMenu1.MenuItems.Add(item);

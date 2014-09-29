@@ -31,7 +31,7 @@ namespace SimplyCpp
 		
 		void Button2Click(object sender, EventArgs e)
 		{
-			System.Diagnostics.Process.Start("http://goharsha.com/simplycpp");
+			System.Diagnostics.Process.Start("http://simplycpp.goharsha.com");
 		}
 		
 		protected override void WndProc(ref Message message)

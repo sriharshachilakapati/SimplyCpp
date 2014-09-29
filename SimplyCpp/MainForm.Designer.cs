@@ -63,16 +63,16 @@
 						'\''};
 			this.fastColoredTextBox1.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n^\\s*(case|default)\\s*[^:]" +
 			"*(?<range>:)\\s*(?<range>[^;]+);\r\n";
-			this.fastColoredTextBox1.AutoScrollMinSize = new System.Drawing.Size(27, 22);
+			this.fastColoredTextBox1.AutoScrollMinSize = new System.Drawing.Size(25, 20);
 			this.fastColoredTextBox1.BackBrush = null;
 			this.fastColoredTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.fastColoredTextBox1.CharHeight = 17;
-			this.fastColoredTextBox1.CharWidth = 8;
+			this.fastColoredTextBox1.CharHeight = 15;
+			this.fastColoredTextBox1.CharWidth = 7;
 			this.fastColoredTextBox1.CurrentLineColor = System.Drawing.Color.LightBlue;
 			this.fastColoredTextBox1.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.fastColoredTextBox1.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.fastColoredTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.fastColoredTextBox1.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.fastColoredTextBox1.Font = new System.Drawing.Font("Consolas", 9.75F);
 			this.fastColoredTextBox1.Hotkeys = resources.GetString("fastColoredTextBox1.Hotkeys");
 			this.fastColoredTextBox1.IsReplaceMode = false;
 			this.fastColoredTextBox1.LeftBracket = '(';
