@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Xml;
 using System.Drawing;
 using FastColoredTextBoxNS;
@@ -7,10 +6,10 @@ using System.Text.RegularExpressions;
 
 namespace SimplyCpp
 {
-	/// <summary>
-	/// Highlighter to highlight C++ code in FastColoredTextBox
-	/// </summary>
-	public class CppHighlighter
+    /// <summary>
+    /// Highlighter to highlight C++ code in FastColoredTextBox
+    /// </summary>
+    public class CppHighlighter
 	{
 		// The FCTB control to run the highlighter on
 		private FastColoredTextBox fctb;

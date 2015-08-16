@@ -2,19 +2,16 @@
 using System.IO;
 using FastColoredTextBoxNS;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace SimplyCpp
 {
-	
-	/// <summary>
-	/// Main Interface form.
-	/// </summary>
-	public partial class MainForm : Form
+
+    /// <summary>
+    /// Main Interface form.
+    /// </summary>
+    public partial class MainForm : Form
 	{
 		
 		private string CurrentFile { get; set; }  // The PATH of the current file
