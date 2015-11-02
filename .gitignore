@@ -3,3 +3,5 @@ Release
 wxSimplyCpp/Debug
 wxSimplyCpp/Release
 ipch
+.vs
+*.sdf
