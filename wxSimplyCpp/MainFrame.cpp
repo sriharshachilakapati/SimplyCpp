@@ -68,6 +68,7 @@ void MainFrame::CreateMenuBar()
 	wxMenu* menuEdit    = new wxMenu();
 	wxMenu* menuProject = new wxMenu();
 	wxMenu* menuCompile = new wxMenu();
+	wxMenu* menuWindow  = new wxMenu();
 	wxMenu* menuHelp    = new wxMenu();
 
 	menuFile->Append(ID_NEW, _("New\tCtrl-N"), _("Create a new file"));
@@ -83,10 +84,15 @@ void MainFrame::CreateMenuBar()
 	menuEdit->AppendSeparator();
 	menuEdit->Append(ID_SELECT_ALL, _("Select All\tCtrl-A"), _("Select all the content"));
 
+	menuWindow->Append(ID_PROJECT_EXPLORER, "Project Explorer", "Open the project explorer pane");
+	menuWindow->Append(ID_PROPERTIES, "File Properties", "See the properties of the current file");
+	menuWindow->Append(ID_OUTPUT, "Output", "Open the output pane");
+
 	menuBar->Append(menuFile, _("&File"));
 	menuBar->Append(menuEdit, _("&Edit"));
 	menuBar->Append(menuProject, _("&Project"));
 	menuBar->Append(menuCompile, _("&Compile"));
+	menuBar->Append(menuWindow, _("&Window"));
 	menuBar->Append(menuHelp, _("&Help"));
 
 	this->SetMenuBar(menuBar);
@@ -214,6 +220,32 @@ void MainFrame::OnMenuSelectAll(wxCommandEvent& WXUNUSED(e))
 {
 }
 
+void MainFrame::OnMenuUndo(wxCommandEvent& WXUNUSED(e))
+{
+}
+
+void MainFrame::OnMenuRedo(wxCommandEvent& WXUNUSED(e))
+{
+}
+
+void MainFrame::OnMenuProjectExplorer(wxCommandEvent& WXUNUSED(e))
+{
+	m_mgr.GetPane("pane_project").Show();
+	m_mgr.Update();
+}
+
+void MainFrame::OnMenuProperties(wxCommandEvent& WXUNUSED(e))
+{
+	m_mgr.GetPane("pane_props").Show();
+	m_mgr.Update();
+}
+
+void MainFrame::OnMenuOutput(wxCommandEvent& WXUNUSED(e))
+{
+	m_mgr.GetPane("pane_output").Show();
+	m_mgr.Update();
+}
+
 void MainFrame::OnMenuProjectClean(wxCommandEvent& WXUNUSED(e))
 {
 }
@@ -246,4 +278,8 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_SAVE, MainFrame::OnMenuSave)
 	EVT_MENU(ID_SAVE_AS, MainFrame::OnMenuSaveAs)
 	EVT_MENU(ID_EXIT, MainFrame::OnMenuExit)
+
+	EVT_MENU(ID_PROJECT_EXPLORER, MainFrame::OnMenuProjectExplorer)
+	EVT_MENU(ID_PROPERTIES, MainFrame::OnMenuProperties)
+	EVT_MENU(ID_OUTPUT, MainFrame::OnMenuOutput)
 END_EVENT_TABLE()

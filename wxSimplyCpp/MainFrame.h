@@ -22,6 +22,11 @@ private:
 	void OnMenuCopy(wxCommandEvent& e);
 	void OnMenuPaste(wxCommandEvent& e);
 	void OnMenuSelectAll(wxCommandEvent& e);
+	void OnMenuUndo(wxCommandEvent& e);
+	void OnMenuRedo(wxCommandEvent& e);
+	void OnMenuProjectExplorer(wxCommandEvent& e);
+	void OnMenuProperties(wxCommandEvent& e);
+	void OnMenuOutput(wxCommandEvent& e);
 	void OnMenuProjectClean(wxCommandEvent& e);
 	void OnMenuProjectCreate(wxCommandEvent& e);
 	void OnMenuCompile(wxCommandEvent& e);
@@ -46,6 +51,12 @@ enum MenuIDs
 	ID_COPY,
 	ID_PASTE,
     ID_SELECT_ALL,
+	ID_UNDO,
+	ID_REDO,
+
+	ID_PROJECT_EXPLORER,
+	ID_PROPERTIES,
+	ID_OUTPUT,
 
 	ID_PROJECT_CLEAN,
 	ID_PROJECT_CREATE,
