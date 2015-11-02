@@ -18,7 +18,7 @@ TerminalWidget::TerminalWidget(wxWindow* parent) : wxPanel(parent, wxID_ANY)
 	m_inputCtrl->SetFont(monospace);
 	m_outputCtrl->SetFont(monospace);
 
-	wxExecute(_("cmd"), wxEXEC_ASYNC, m_process);
+	wxExecute(_("cmd /q"), wxEXEC_ASYNC, m_process);
 
 	m_stdout = m_process->GetInputStream();
 	m_stdin = m_process->GetOutputStream();
@@ -81,10 +81,14 @@ void TerminalWidget::OnEnter(wxCommandEvent& WXUNUSED(e))
 			wxTextOutputStream out(*m_stdin);
 
 			out << m_inputCtrl->GetValue() << '\n';
-
-			m_inputCtrl->Clear();
+			m_outputCtrl->AppendText(m_inputCtrl->GetValue());
+			m_outputCtrl->AppendText("\n");
 		}
 	}
+	else
+		m_outputCtrl->AppendText("\nError, program terminated, cannot pass input");
+
+	m_inputCtrl->Clear();
 }
 
 BEGIN_EVENT_TABLE(TerminalWidget, wxPanel)
