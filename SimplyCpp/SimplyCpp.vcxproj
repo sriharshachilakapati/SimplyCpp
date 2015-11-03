@@ -32,7 +32,7 @@
     <ClCompile Include="TerminalWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="wxSimplyCpp.rc" />
+    <ResourceCompile Include="SimplyCpp.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />

@@ -4,7 +4,7 @@
 
 bool Application::OnInit()
 {
-	MainFrame* frame = new MainFrame();
-	frame->Show(true);
-	return true;
+    MainFrame* frame = new MainFrame();
+    frame->Show(true);
+    return true;
 }
