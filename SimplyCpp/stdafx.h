@@ -5,3 +5,4 @@
 #include <wx/config.h>
 #include <wx/process.h>
 #include <wx/txtstrm.h>
+#include <wx/artprov.h>

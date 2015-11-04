@@ -50,6 +50,9 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
         wxString str = m_config->Read(_("Layer.Perspective"));
         m_mgr.LoadPerspective(str);
     }
+
+    CenterOnScreen();
+    Maximize();
 }
 
 MainFrame::~MainFrame()
@@ -87,6 +90,7 @@ void MainFrame::CreateMenuBar()
     menuWindow->Append(ID_PROJECT_EXPLORER, "Project Explorer", "Open the project explorer pane");
     menuWindow->Append(ID_PROPERTIES, "File Properties", "See the properties of the current file");
     menuWindow->Append(ID_OUTPUT, "Output", "Open the output pane");
+    menuWindow->Append(ID_TERMINAL, "Terminal", "Open a terminal in output pane");
 
     menuBar->Append(menuFile, _("&File"));
     menuBar->Append(menuEdit, _("&Edit"));
@@ -246,6 +250,17 @@ void MainFrame::OnMenuOutput(wxCommandEvent& WXUNUSED(e))
     m_mgr.Update();
 }
 
+void MainFrame::OnMenuTerminal(wxCommandEvent& WXUNUSED(e))
+{
+    TerminalWidget* terminalWidget = static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window);
+
+#ifdef __WXMSW__
+    terminalWidget->RunCommand("cmd /q");
+#else
+    terminalWidget->RunCommand("bash");
+#endif
+}
+
 void MainFrame::OnMenuProjectClean(wxCommandEvent& WXUNUSED(e))
 {
 }
@@ -282,4 +297,5 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_PROJECT_EXPLORER, MainFrame::OnMenuProjectExplorer)
     EVT_MENU(ID_PROPERTIES, MainFrame::OnMenuProperties)
     EVT_MENU(ID_OUTPUT, MainFrame::OnMenuOutput)
+    EVT_MENU(ID_TERMINAL, MainFrame::OnMenuTerminal)
 END_EVENT_TABLE()

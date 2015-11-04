@@ -5,9 +5,17 @@ public:
     TerminalWidget(wxWindow* parent);
     ~TerminalWidget();
 
+    void TerminateProcess();
+    void RunCommand(const wxString& command);
+    void ClearOutput();
+
 private:
     void OnTimer(wxTimerEvent& e);
     void OnEnter(wxCommandEvent& e);
+    void OnTerminate(wxProcessEvent& e);
+
+    void OnTerminateClick(wxCommandEvent& e);
+    void OnRestartClick(wxCommandEvent& e);
 
     wxProcess* m_process;
 
@@ -19,6 +27,13 @@ private:
     wxTextCtrl* m_outputCtrl;
 
     wxTimer* m_timer;
+    wxString m_sLastCommand;
 
     DECLARE_EVENT_TABLE()
+};
+
+enum EventIDs
+{
+    ID_TERMINATE = 200,
+    ID_RESTART
 };

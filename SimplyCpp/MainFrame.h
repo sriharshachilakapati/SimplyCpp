@@ -27,6 +27,7 @@ private:
     void OnMenuProjectExplorer(wxCommandEvent& e);
     void OnMenuProperties(wxCommandEvent& e);
     void OnMenuOutput(wxCommandEvent& e);
+    void OnMenuTerminal(wxCommandEvent& e);
     void OnMenuProjectClean(wxCommandEvent& e);
     void OnMenuProjectCreate(wxCommandEvent& e);
     void OnMenuCompile(wxCommandEvent& e);
@@ -57,6 +58,7 @@ enum MenuIDs
     ID_PROJECT_EXPLORER,
     ID_PROPERTIES,
     ID_OUTPUT,
+    ID_TERMINAL,
 
     ID_PROJECT_CLEAN,
     ID_PROJECT_CREATE,
