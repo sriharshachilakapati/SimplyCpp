@@ -176,7 +176,7 @@ void MainFrame::OnMenuSaveAs(wxCommandEvent& WXUNUSED(e))
 
 void MainFrame::OnMenuExit(wxCommandEvent& e)
 {
-    for (int i = 0; i < m_notebook->GetPageCount(); i++)
+    for (unsigned int i = 0; i < m_notebook->GetPageCount(); i++)
     {
         EditorWidget* editorPage = static_cast<EditorWidget*>(m_notebook->GetPage(i));
 
@@ -210,26 +210,56 @@ void MainFrame::OnMenuExit(wxCommandEvent& e)
 
 void MainFrame::OnMenuCut(wxCommandEvent& WXUNUSED(e))
 {
+    if (m_notebook->GetPageCount() == 0)
+        return;
+
+    EditorWidget* current = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+    current->Cut();
 }
 
 void MainFrame::OnMenuCopy(wxCommandEvent& WXUNUSED(e))
 {
+    if (m_notebook->GetPageCount() == 0)
+        return;
+
+    EditorWidget* current = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+    current->Copy();
 }
 
 void MainFrame::OnMenuPaste(wxCommandEvent& WXUNUSED(e))
 {
+    if (m_notebook->GetPageCount() == 0)
+        return;
+
+    EditorWidget* current = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+    current->Paste();
 }
 
 void MainFrame::OnMenuSelectAll(wxCommandEvent& WXUNUSED(e))
 {
+    if (m_notebook->GetPageCount() == 0)
+        return;
+
+    EditorWidget* current = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+    current->SelectAll();
 }
 
 void MainFrame::OnMenuUndo(wxCommandEvent& WXUNUSED(e))
 {
+    if (m_notebook->GetPageCount() == 0)
+        return;
+
+    EditorWidget* current = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+    current->Undo();
 }
 
 void MainFrame::OnMenuRedo(wxCommandEvent& WXUNUSED(e))
 {
+    if (m_notebook->GetPageCount() == 0)
+        return;
+
+    EditorWidget* current = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+    current->Redo();
 }
 
 void MainFrame::OnMenuProjectExplorer(wxCommandEvent& WXUNUSED(e))
@@ -293,6 +323,13 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_SAVE, MainFrame::OnMenuSave)
     EVT_MENU(ID_SAVE_AS, MainFrame::OnMenuSaveAs)
     EVT_MENU(ID_EXIT, MainFrame::OnMenuExit)
+
+    EVT_MENU(ID_CUT, MainFrame::OnMenuCut)
+    EVT_MENU(ID_COPY, MainFrame::OnMenuCopy)
+    EVT_MENU(ID_PASTE, MainFrame::OnMenuPaste)
+    EVT_MENU(ID_SELECT_ALL, MainFrame::OnMenuSelectAll)
+    EVT_MENU(ID_UNDO, MainFrame::OnMenuUndo)
+    EVT_MENU(ID_REDO, MainFrame::OnMenuRedo)
 
     EVT_MENU(ID_PROJECT_EXPLORER, MainFrame::OnMenuProjectExplorer)
     EVT_MENU(ID_PROPERTIES, MainFrame::OnMenuProperties)
