@@ -8,3 +8,5 @@ bool Application::OnInit()
     frame->Show(true);
     return true;
 }
+
+IMPLEMENT_APP(Application)

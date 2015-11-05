@@ -9,5 +9,4 @@ public:
     virtual bool OnInit();
 };
 
-wxDECLARE_APP(Application);
-wxIMPLEMENT_APP(Application);
+DECLARE_APP(Application)
