@@ -17,9 +17,12 @@ public:
 private:
     void InitEditor();
     void OnTextChange(wxStyledTextEvent& e);
+    void OnCharAdded(wxStyledTextEvent& e);
 
     int m_nMaxLines;
 
     wxString m_sOriginalCode;
     wxString m_sFileName;
+
+    DECLARE_EVENT_TABLE()
 };

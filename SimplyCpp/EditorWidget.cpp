@@ -27,9 +27,12 @@ void EditorWidget::InitEditor()
     SetStyleBits(5);
     SetTabWidth(4);
     SetUseTabs(false);
+    SetIndent(4);
+
+    SetTabIndents(true);
+    SetBackSpaceUnIndents(true);
 
     //scintilla.AutomaticFold = (AutomaticFold.Show | AutomaticFold.Click | AutomaticFold.Change);
-
 
     wxFont monospace(11, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, _("Consolas"));
     StyleSetFont(wxSTC_STYLE_DEFAULT, monospace);
@@ -60,21 +63,9 @@ void EditorWidget::InitEditor()
         "nothrow novtable nullptr safecast __stdcall "
         "__try __except __finally __unaligned uuid __uuidof "
         "__virtual_inheritance"
-        );
+    );
 
     SetKeyWords(0, keywords);
-
-    // Set Styles
-    /*<colors>
-        <comment   bold = "false" italic = "false" underline = "false">#008000< / comment>
-        <keyword   bold = "false" italic = "false" underline = "false">#0000F0< / keyword>
-        <typenames bold = "false" italic = "false" underline = "false">#5c2699< / typenames>
-        <strings   bold = "false" italic = "false" underline = "false">#800000< / strings>
-        <numbers   bold = "false" italic = "false" underline = "false">#660E7A< / numbers>
-        <operators bold = "false" italic = "false" underline = "false">#000000< / operators>
-        <pragmas   bold = "false" italic = "false" underline = "false">#643820< / pragmas>
-        <headers   bold = "false" italic = "false" underline = "false">#808080< / headers>
-        < / colors>*/
 
     StyleSetForeground(wxSTC_C_COMMENT, wxColor(_("#008000")));
     StyleSetForeground(wxSTC_C_COMMENTLINE, wxColor(_("#008000")));
@@ -94,8 +85,34 @@ void EditorWidget::InitEditor()
     StyleSetBold(wxSTC_C_COMMENTDOCKEYWORD, true);
     StyleSetBold(wxSTC_C_COMMENTDOCKEYWORDERROR, true);
     StyleSetUnderline(wxSTC_C_COMMENTDOCKEYWORDERROR, true);
+}
 
-    Connect(wxEVT_STC_CHANGE, wxStyledTextEventHandler(EditorWidget::OnTextChange));
+void EditorWidget::OnCharAdded(wxStyledTextEvent& e)
+{
+    const wxChar& chr = e.GetKey();
+    const int currentLine = GetCurrentLine();
+
+    if (chr == '\n' || chr == '\r')
+    {
+        int lineInd = 0;
+
+        if (currentLine > 0)
+        {
+            lineInd = GetLineIndentation(currentLine - 1);
+
+            if (GetLine(currentLine - 1).Contains("{"))
+                lineInd += GetIndent();
+        }
+
+        if (lineInd != 0)
+        {
+            SetLineIndentation(currentLine, lineInd);
+            GotoPos(PositionFromLine(currentLine) + lineInd);
+        }
+    }
+
+    else if (chr == '}')
+        SetLineIndentation(currentLine, GetLineIndentation(currentLine) - GetIndent());
 }
 
 void EditorWidget::OnTextChange(wxStyledTextEvent& WXUNUSED(e))
@@ -139,3 +156,8 @@ void EditorWidget::SaveFile(const wxString& file, int fileType)
     m_sOriginalCode = GetText();
     m_sFileName = file;
 }
+
+BEGIN_EVENT_TABLE(EditorWidget, wxStyledTextCtrl)
+    EVT_STC_CHANGE(wxID_ANY, EditorWidget::OnTextChange)
+    EVT_STC_CHARADDED(wxID_ANY, EditorWidget::OnCharAdded)
+END_EVENT_TABLE()
