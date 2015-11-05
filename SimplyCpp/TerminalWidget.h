@@ -7,6 +7,7 @@ public:
 
     void TerminateProcess();
     void RunCommand(const wxString& command);
+    void RunCommand(const wxString& command, const wxExecuteEnv& env);
     void ClearOutput();
 
 private:

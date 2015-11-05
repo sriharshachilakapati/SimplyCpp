@@ -62,7 +62,7 @@ void TerminalWidget::TerminateProcess()
     m_timer->Stop();
 }
 
-void TerminalWidget::RunCommand(const wxString & command)
+void TerminalWidget::RunCommand(const wxString& command, const wxExecuteEnv& env)
 {
     TerminateProcess();
     ClearOutput();
@@ -71,7 +71,7 @@ void TerminalWidget::RunCommand(const wxString & command)
     m_process = new wxProcess(wxEXEC_ASYNC);
     m_process->Redirect();
 
-    wxExecute(command, wxEXEC_ASYNC, m_process);
+    wxExecute(command, wxEXEC_ASYNC, m_process, &env);
 
     m_stdout = m_process->GetInputStream();
     m_stdin = m_process->GetOutputStream();
@@ -82,6 +82,11 @@ void TerminalWidget::RunCommand(const wxString & command)
 
     m_inputCtrl->Enable();
     m_inputCtrl->SetFocus();
+}
+
+void TerminalWidget::RunCommand(const wxString& command)
+{
+    RunCommand(command, wxExecuteEnv());
 }
 
 void TerminalWidget::ClearOutput()
