@@ -18,6 +18,7 @@ private:
     void InitEditor();
     void OnTextChange(wxStyledTextEvent& e);
     void OnCharAdded(wxStyledTextEvent& e);
+    void OnMarginClick(wxStyledTextEvent& e);
 
     int m_nMaxLines;
 
