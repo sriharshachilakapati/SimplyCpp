@@ -4,7 +4,8 @@
 TerminalWidget::TerminalWidget(wxWindow* parent) : wxPanel(parent, wxID_ANY)
 {
     m_inputCtrl = new wxTextCtrl(this, wxID_ANY);
-    m_outputCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    m_outputCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+        wxTE_MULTILINE | wxTE_RICH);
 
     m_outputCtrl->SetEditable(false);
     m_outputCtrl->SetBackgroundColour(wxColor(255, 255, 255));
@@ -105,17 +106,19 @@ void TerminalWidget::OnTimer(wxTimerEvent& e)
             return;
         }
 
-        while (m_stdout->CanRead())
-        {
-            char buffer[4096];
-            buffer[m_stdout->Read(buffer, WXSIZEOF(buffer) - 1).LastRead()] = '\0';
-            m_outputCtrl->AppendText(buffer);
-        }
-
+        m_outputCtrl->SetDefaultStyle(wxTextAttr(*wxRED));
         while (m_stderr->CanRead())
         {
             char buffer[4096];
             buffer[m_stderr->Read(buffer, WXSIZEOF(buffer) - 1).LastRead()] = '\0';
+            m_outputCtrl->AppendText(buffer);
+        }
+
+        m_outputCtrl->SetDefaultStyle(wxTextAttr(*wxBLACK));
+        while (m_stdout->CanRead())
+        {
+            char buffer[4096];
+            buffer[m_stdout->Read(buffer, WXSIZEOF(buffer) - 1).LastRead()] = '\0';
             m_outputCtrl->AppendText(buffer);
         }
 
@@ -134,12 +137,17 @@ void TerminalWidget::OnEnter(wxCommandEvent& WXUNUSED(e))
                 wxTextOutputStream out(*m_stdin);
 
                 out << m_inputCtrl->GetValue() << '\n';
+
+                m_outputCtrl->SetDefaultStyle(wxTextAttr(wxColor(0, 100, 50)));
                 m_outputCtrl->AppendText(m_inputCtrl->GetValue());
                 m_outputCtrl->AppendText("\n");
             }
         }
         else
+        {
+            m_outputCtrl->SetDefaultStyle(wxTextAttr(*wxRED));
             m_outputCtrl->AppendText("\nError, program terminated, cannot pass input");
+        }
     }
 
     m_inputCtrl->Clear();
@@ -147,6 +155,7 @@ void TerminalWidget::OnEnter(wxCommandEvent& WXUNUSED(e))
 
 void TerminalWidget::OnTerminate(wxProcessEvent& e)
 {
+    m_outputCtrl->SetDefaultStyle(wxTextAttr(wxColor(100, 100, 100)));
     m_outputCtrl->AppendText(wxString::Format("\nProcess finished with exit code %d\n", e.GetExitCode()));
     m_inputCtrl->Disable();
 }
