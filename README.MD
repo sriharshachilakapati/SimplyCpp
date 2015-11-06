@@ -2,7 +2,7 @@
 
 SimplyCpp is a very simple to use IDE for C++ Language, that is intended for students who are very new to the field of programming. This is programmed because they need to focus more on the syntax rather than understanding the complex build tools and IDEs.
 
-![ScreenShot new](http://i.imgur.com/BEsHq4p.png)
+![ScreenShot new](http://i.imgur.com/kDwqQmF.png)
 
 I'm remaking the editor in C++ wxWidgets because wxAUI gives more control than standard WinForms, and also allows for the application to be compiled and run on a Mac.
 
