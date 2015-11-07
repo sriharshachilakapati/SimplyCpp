@@ -45,6 +45,7 @@ void EditorWidget::InitEditor()
     SetProperty("fold", "2");
     SetProperty("fold.comment", "2");
     SetProperty("fold.compact", "2");
+    SetProperty("styling.within.preprocessor", "1");
 
     for (int i = 25; i <= 31; i++)
     {
@@ -72,32 +73,38 @@ void EditorWidget::InitEditor()
     StyleClearAll();
 
     static const wxString keywords =
-        // Standard
-        "asm auto bool break case catch char class const "
-        "const_cast continue default delete do double "
-        "dynamic_cast else enum explicit extern false finally "
-        "float for friend goto if inline int long mutable "
-        "namespace new operator private protected public "
-        "register reinterpret_cast register return short signed "
-        "sizeof static static_cast struct switch template "
-        "this throw true try typedef typeid typename "
-        "union unsigned using virtual void volatile "
-        "wchar_t while override final";
+        // Standard C++14 (http://en.cppreference.com/w/cpp/keyword)
+        "alignas alignof and and_eq asm auto bitand bitor bool break case catch char char16_t char32_t class "
+        "compl concept const constexpr const_cast continue decltype default delete do double dynamic_cast "
+        "else enum explicit export extern false float for friend goto if inline int long mutable namespace "
+        "new noexcept not not_eq nullptr operator or or_eq private protected public register reinterpret_cast "
+        "requires return short signed sizeof static static_assert static_cast struct switch template this "
+        "thread_local throw true try typedef typeid typename union unsigned using virtual void volatile "
+        "wchar_t while xor xor_eq";
 
     static const wxString keywords1 =
-        // Extended
-        "__asm __asume __based __box __cdecl __declspec "
-        "__delegate delegate depreciated dllexport dllimport "
-        "event __event __except __fastcall __finally __forceinline "
-        "__int8 __int16 __int32 __int64 __int128 __interface "
-        "interface __leave naked noinline __noop noreturn "
-        "nothrow novtable nullptr safecast __stdcall "
-        "__try __except __finally __unaligned uuid __uuidof "
-        "__virtual_inheritance";
+        // Extended Microsoft extensions (https://msdn.microsoft.com/en-us/library/2e6a4at9.aspx)
+        "__abstract __alignof __asm __assume __based __box __cdecl __declspec __delegate __event __except "
+        "__fastcall __finally __forceinline __gc __hook __identifier __if_exists __if_not_exists __inline "
+        "__int16 __int32 __int64 __int8 __interface __leave __m128 __m128d __m128i __m64 "
+        "__multiple_inheritance __nogc __noop __pin __property __raise __sealed __single_inheritance "
+        "__stdcall __super __thiscall __try __except __finally __try_cast __unaligned __unhook __uuidof "
+        "__value __virtual_inheritance __w64 __wchar_t "
+        
+        // Other extended keywords (http://docwiki.appmethod.com/appmethod/1.17/topics/en/Keywords,_Alphabetical_Listing_Index)
+        "_asm __automated axiom _Bool cdecl _cdecl __classid __classmethod __closure _Complex concept_map "
+        "__declspec(allocate(\"SEGNAME\")) __declspec(delphiclass) __declspec(delphirecord) "
+        "__declspec(delphireturn) __declspec(delphirtti) __declspec(dllexport) __declspec(dllimport) "
+        "__declspec(dynamic) __declspec(hidesbase) __declspec(naked) __declspec(noreturn) __declspec(nothrow) "
+        "__declspec(novtable) __declspec(package) __declspec(pascalimplementation) __declspec(property) "
+        "__declspec(selectany) __declspec(thread) __declspec(uuid(\"ComObjectGUID\")) __delphirtti __dispid "
+        "__emit__ _export __export _fastcall _Imaginary _import __import late_check __msfastcall __msreturn "
+        "_pascal __pascal __published __rtti _stdcall __thread __uuidof uuidof";
 
     SetKeyWords(0, keywords);
     SetKeyWords(1, keywords1);
 
+    StyleSetForeground(wxSTC_C_GLOBALCLASS, wxColor(_("#ef0000")));
     StyleSetForeground(wxSTC_C_COMMENT, wxColor(_("#008000")));
     StyleSetForeground(wxSTC_C_COMMENTLINE, wxColor(_("#008000")));
     StyleSetForeground(wxSTC_C_WORD, wxColor(_("#0000F0")));
@@ -113,6 +120,7 @@ void EditorWidget::InitEditor()
     StyleSetForeground(wxSTC_C_COMMENTDOC, wxColor(_("#808080")));
     StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORD, wxColor(_("#808080")));
     StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORDERROR, wxColor(_("#808080")));
+    StyleSetForeground(wxSTC_C_OPERATOR, wxColor(_("#0080E0")));
 
     StyleSetBold(wxSTC_C_COMMENTDOCKEYWORD, true);
     StyleSetBold(wxSTC_C_COMMENTDOCKEYWORDERROR, true);
