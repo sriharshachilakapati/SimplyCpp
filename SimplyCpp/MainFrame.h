@@ -13,6 +13,8 @@ private:
 
     void CreateMenuBar();
 
+    void OnEditorClose(wxAuiNotebookEvent& e);
+    void OnWindowClose(wxCloseEvent& e);
     void OnMenuNew(wxCommandEvent& e);
     void OnMenuOpen(wxCommandEvent& e);
     void OnMenuSave(wxCommandEvent& e);

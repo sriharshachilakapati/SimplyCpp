@@ -102,6 +102,43 @@ void MainFrame::CreateMenuBar()
     this->SetMenuBar(menuBar);
 }
 
+void MainFrame::OnEditorClose(wxAuiNotebookEvent& e)
+{
+    EditorWidget* editorPage = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+
+    if (!editorPage->SavedOnce() || editorPage->CodeChanged())
+    {
+        wxMessageDialog* dialog = new wxMessageDialog(this,
+            wxString::Format(_("Do you want to save %s? If not, all your work will be lost!"),
+                m_notebook->GetPageText(m_notebook->GetPageIndex(editorPage))),
+            _("SimplyCpp"), wxYES_NO | wxCANCEL);
+
+        switch (dialog->ShowModal())
+        {
+        case wxID_YES:
+            OnMenuSave(e);
+
+            // Only break if the file is not saved
+            // The user must have clicked on cancel button in save as box
+            if (!editorPage->CodeChanged())
+                break;
+
+        case wxID_CANCEL:
+            e.Veto();
+            dialog->Destroy();
+            return;
+        }
+
+        dialog->Destroy();
+    }
+}
+
+void MainFrame::OnWindowClose(wxCloseEvent& WXUNUSED(e))
+{
+    wxCommandEvent nullEvent;
+    OnMenuExit(nullEvent);
+}
+
 void MainFrame::OnMenuNew(wxCommandEvent& WXUNUSED(e))
 {
     m_notebook->AddPage(new EditorWidget(this),
@@ -286,8 +323,10 @@ void MainFrame::OnMenuTerminal(wxCommandEvent& WXUNUSED(e))
 
 #ifdef __WXMSW__
     terminalWidget->RunCommand("cmd /q");
-#else
+#elif __WXMAC__
     terminalWidget->RunCommand("bash");
+#else
+    terminalWidget->RunCommand("sh");
 #endif
 }
 
@@ -335,4 +374,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_PROPERTIES, MainFrame::OnMenuProperties)
     EVT_MENU(ID_OUTPUT, MainFrame::OnMenuOutput)
     EVT_MENU(ID_TERMINAL, MainFrame::OnMenuTerminal)
+    EVT_CLOSE(MainFrame::OnWindowClose)
+
+    EVT_AUINOTEBOOK_PAGE_CLOSE(wxID_ANY, MainFrame::OnEditorClose)
 END_EVENT_TABLE()
