@@ -19,6 +19,25 @@ private:
     void OnTextChange(wxStyledTextEvent& e);
     void OnCharAdded(wxStyledTextEvent& e);
     void OnMarginClick(wxStyledTextEvent& e);
+    void OnUpdateUI(wxStyledTextEvent& e);
+
+    inline bool IsBrace(const int& c)
+    {
+        switch (c)
+        {
+        case '(':
+        case ')':
+        case '[':
+        case ']':
+        case '{':
+        case '}':
+        case '<':
+        case '>':
+            return true;
+        }
+
+        return false;
+    }
 
     int m_nMaxLines;
 

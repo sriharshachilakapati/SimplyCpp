@@ -107,9 +107,9 @@ void EditorWidget::InitEditor()
     StyleSetForeground(wxSTC_C_GLOBALCLASS, wxColor(_("#ef0000")));
     StyleSetForeground(wxSTC_C_COMMENT, wxColor(_("#008000")));
     StyleSetForeground(wxSTC_C_COMMENTLINE, wxColor(_("#008000")));
-    StyleSetForeground(wxSTC_C_WORD, wxColor(_("#0000F0")));
+    StyleSetForeground(wxSTC_C_WORD, wxColor(_("#0040FE")));
     StyleSetForeground(wxSTC_C_WORD2, wxColor(_("#008080")));
-    StyleSetForeground(wxSTC_C_IDENTIFIER, wxColor(_("#5c2699")));
+    StyleSetForeground(wxSTC_C_IDENTIFIER, wxColor(_("#000050")));
     StyleSetForeground(wxSTC_C_STRING, wxColor("#800000"));
     StyleSetForeground(wxSTC_C_STRINGEOL, wxColor("#800000"));
     StyleSetForeground(wxSTC_C_STRINGRAW, wxColor(_("#800000")));
@@ -120,12 +120,17 @@ void EditorWidget::InitEditor()
     StyleSetForeground(wxSTC_C_COMMENTDOC, wxColor(_("#808080")));
     StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORD, wxColor(_("#808080")));
     StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORDERROR, wxColor(_("#808080")));
-    StyleSetForeground(wxSTC_C_OPERATOR, wxColor(_("#0080E0")));
+    StyleSetForeground(wxSTC_C_OPERATOR, wxColor(_("#000000")));
 
     StyleSetBold(wxSTC_C_COMMENTDOCKEYWORD, true);
     StyleSetBold(wxSTC_C_COMMENTDOCKEYWORDERROR, true);
     StyleSetItalic(wxSTC_C_WORD2, true);
     StyleSetUnderline(wxSTC_C_COMMENTDOCKEYWORDERROR, true);
+
+    // Brace highlighting
+    StyleSetBackground(wxSTC_STYLE_BRACELIGHT, wxColor(230, 230, 230));
+    StyleSetForeground(wxSTC_STYLE_BRACELIGHT, wxColor(0, 100, 100));
+    StyleSetForeground(wxSTC_STYLE_BRACEBAD, wxColor(200, 0, 0));
 }
 
 void EditorWidget::OnCharAdded(wxStyledTextEvent& e)
@@ -165,6 +170,40 @@ void EditorWidget::OnMarginClick(wxStyledTextEvent& e)
 
         if ((levelClick & wxSTC_FOLDLEVELHEADERFLAG) > 0)
             ToggleFold(lineClick);
+    }
+}
+
+void EditorWidget::OnUpdateUI(wxStyledTextEvent& WXUNUSED(e))
+{
+    static int lastCaretPos = 0;
+    int caretPos = GetCurrentPos();
+
+    if (lastCaretPos != caretPos)
+    {
+        lastCaretPos = caretPos;
+
+        int bracePos1 = -1;
+        int bracePos2 = -1;
+
+        // Is there a brace to the left or right?
+        if (caretPos > 0 && IsBrace(GetCharAt(caretPos - 1)))
+            bracePos1 = (caretPos - 1);
+        else if (IsBrace(GetCharAt(caretPos)))
+            bracePos1 = caretPos;
+
+        if (bracePos1 >= 0)
+        {
+            // Find the matching brace
+            bracePos2 = BraceMatch(bracePos1);
+
+            if (bracePos2 == wxSTC_INVALID_POSITION)
+                BraceBadLight(bracePos1);
+            else
+                BraceHighlight(bracePos1, bracePos2);
+        }
+        else
+            // Turn off brace matching
+            BraceHighlight(wxSTC_INVALID_POSITION, wxSTC_INVALID_POSITION);
     }
 }
 
@@ -214,4 +253,5 @@ BEGIN_EVENT_TABLE(EditorWidget, wxStyledTextCtrl)
     EVT_STC_CHANGE(wxID_ANY, EditorWidget::OnTextChange)
     EVT_STC_CHARADDED(wxID_ANY, EditorWidget::OnCharAdded)
     EVT_STC_MARGINCLICK(wxID_ANY, EditorWidget::OnMarginClick)
+    EVT_STC_UPDATEUI(wxID_ANY, EditorWidget::OnUpdateUI)
 END_EVENT_TABLE()
