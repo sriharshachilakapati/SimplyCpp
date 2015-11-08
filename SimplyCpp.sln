@@ -15,6 +15,7 @@ Global
 		{DD7056F1-2DE6-4807-87AC-79E54AD47623}.Debug|x86.Build.0 = Debug|Win32
 		{DD7056F1-2DE6-4807-87AC-79E54AD47623}.Release|x86.ActiveCfg = Release|Win32
 		{DD7056F1-2DE6-4807-87AC-79E54AD47623}.Release|x86.Build.0 = Release|Win32
+		{DD7056F1-2DE6-4807-87AC-79E54AD47623}.Release|x86.Deploy.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
