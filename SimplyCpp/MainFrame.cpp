@@ -20,7 +20,8 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
 
     TerminalWidget* terminal = new TerminalWidget(this);
 
-    m_notebook = new wxAuiNotebook(this, wxID_ANY);
+    m_notebook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 
+        wxAUI_NB_CLOSE_ON_ACTIVE_TAB | wxAUI_NB_MIDDLE_CLICK_CLOSE);
     m_notebook->AddPage(new EditorWidget(this), _("Untitled"));
 
     text1->SetEditable(false);
@@ -104,14 +105,13 @@ void MainFrame::CreateMenuBar()
 
 void MainFrame::OnEditorClose(wxAuiNotebookEvent& e)
 {
-    EditorWidget* editorPage = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+    EditorWidget* editorPage = static_cast<EditorWidget*>(m_notebook->GetPage(e.GetSelection()));
 
     if (!editorPage->SavedOnce() || editorPage->CodeChanged())
     {
         wxMessageDialog* dialog = new wxMessageDialog(this,
             wxString::Format(_("Do you want to save %s? If not, all your work will be lost!"),
-                m_notebook->GetPageText(m_notebook->GetPageIndex(editorPage))),
-            _("SimplyCpp"), wxYES_NO | wxCANCEL);
+                m_notebook->GetPageText(e.GetSelection())), _("SimplyCpp"), wxYES_NO | wxCANCEL);
 
         switch (dialog->ShowModal())
         {

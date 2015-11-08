@@ -48,6 +48,7 @@ enum MenuIDs
     ID_OPEN,
     ID_SAVE,
     ID_SAVE_AS,
+    ID_CLOSE,
     ID_EXIT,
 
     ID_CUT,
