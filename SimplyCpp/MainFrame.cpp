@@ -21,7 +21,7 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
     TerminalWidget* terminal = new TerminalWidget(this);
 
     m_notebook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 
-        wxAUI_NB_CLOSE_ON_ACTIVE_TAB | wxAUI_NB_MIDDLE_CLICK_CLOSE);
+        wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_MIDDLE_CLICK_CLOSE);
     m_notebook->AddPage(new EditorWidget(this), _("Untitled"));
 
     text1->SetEditable(false);
