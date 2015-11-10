@@ -6,3 +6,5 @@
 #include <wx/process.h>
 #include <wx/txtstrm.h>
 #include <wx/artprov.h>
+#include <wx/stdpaths.h>
+#include <wx/wfstream.h>
