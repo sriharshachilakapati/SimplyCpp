@@ -238,8 +238,24 @@ namespace SimplyCpp
 
         void EditorWidget::LoadFile(const wxString& file)
         {
-            wxTextAreaBase::LoadFile(file);
-            m_sOriginalCode = GetText();
+            wxFileInputStream fin(file);
+            wxTextInputStream in(fin, _("\x09"), wxConvUTF8);
+
+            while (fin.IsOk() && !fin.Eof())
+            {
+                wxString line = in.ReadLine();
+
+                SetText(GetText() + line + (fin.Eof() ? "" : "\n"));
+            }
+
+            wxString text = GetText();
+
+            text = wxString(text);
+            text.Replace("\r", "");
+
+            SetText(text);
+
+            m_sOriginalCode = text;
             m_sFileName = file;
         }
 
@@ -253,7 +269,16 @@ namespace SimplyCpp
             wxFileOutputStream fout(file);
             wxTextOutputStream out(fout, wxEOL_NATIVE, wxConvUTF8);
 
-            out << GetText();
+            for (int i = 0; i < GetNumberOfLines(); i++)
+            {
+                wxString line = GetLine(i);
+
+                line.Replace("\r", "");
+                line.Replace("\n", "");
+
+                out << line << ((i == GetNumberOfLines() - 1) ? "" : "\n");
+            }
+
             out.Flush();
             fout.Close();
 
@@ -268,6 +293,6 @@ namespace SimplyCpp
             EVT_STC_CHARADDED(wxID_ANY, EditorWidget::OnCharAdded)
             EVT_STC_MARGINCLICK(wxID_ANY, EditorWidget::OnMarginClick)
             EVT_STC_UPDATEUI(wxID_ANY, EditorWidget::OnUpdateUI)
-            END_EVENT_TABLE()
+        END_EVENT_TABLE()
     }
 }
