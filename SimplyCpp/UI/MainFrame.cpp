@@ -383,7 +383,7 @@ namespace SimplyCpp
             wxString exeName = wxString(fileName);
             exeName.Replace(".cpp", ".exe");
 
-            terminalWidget->RunCommand(compilerPath + "g++ " + fileName + " -s -o " + exeName, env);
+            terminalWidget->RunCommand(compilerPath + "g++.exe " + fileName + " -s -o " + exeName, env);
         }
 
         void MainFrame::OnMenuRun(wxCommandEvent& WXUNUSED(e))
