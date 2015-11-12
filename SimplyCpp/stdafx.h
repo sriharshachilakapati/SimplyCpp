@@ -8,3 +8,6 @@
 #include <wx/artprov.h>
 #include <wx/stdpaths.h>
 #include <wx/wfstream.h>
+
+#include <vector>
+#include <string>
