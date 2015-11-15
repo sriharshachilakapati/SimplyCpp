@@ -1,12 +1,21 @@
 #pragma once
+#include "../stdafx.h"
 
-class SourceFile
+namespace SimplyCpp
 {
-public:
-    SourceFile();
-    ~SourceFile();
+    namespace Core
+    {
+        class SourceFile
+        {
+        public:
+            SourceFile(std::string filename);
 
-private:
-    
-};
+            void SetFileName(std::string filename);
 
+            std::string GetFileName();
+
+        private:
+            std::string m_filename;
+        };
+    }
+}

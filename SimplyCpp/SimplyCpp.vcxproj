@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Project.h" />
     <ClInclude Include="Core\SourceFile.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UI\Application.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="UI\TerminalWidget.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Project.cpp" />
     <ClCompile Include="Core\SourceFile.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

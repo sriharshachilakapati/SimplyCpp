@@ -1,10 +1,21 @@
+#pragma once
 #include "../stdafx.h"
 #include "SourceFile.h"
 
-SourceFile::SourceFile()
+using namespace SimplyCpp::Core;
+
+SourceFile::SourceFile(std::string filename)
 {
+    SetFileName(filename);
 }
 
-SourceFile::~SourceFile()
+void SourceFile::SetFileName(std::string filename)
 {
+    m_filename = filename;
 }
+
+std::string SourceFile::GetFileName()
+{
+    return m_filename;
+}
+
