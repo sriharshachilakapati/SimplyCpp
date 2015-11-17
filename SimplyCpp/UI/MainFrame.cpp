@@ -31,8 +31,8 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
 
     m_mgr.AddPane(text1, wxAuiPaneInfo().Name(_("pane_project")).Caption(_("Project Explorer")).Left());
     m_mgr.AddPane(text2, wxAuiPaneInfo().Name(_("pane_props")).Caption(_("Properties")).Right());
-    m_mgr.AddPane(terminal, wxAuiPaneInfo().Name(_("pane_output")).Caption(_("Output")).Bottom());
-    m_mgr.AddPane(m_notebook, wxAuiPaneInfo().Name(_("pane_notebook")).CaptionVisible(false).Center());
+    m_mgr.AddPane(terminal, wxAuiPaneInfo().Name(_("pane_output")).Caption(_("Output")).Bottom().MaximizeButton(true));
+    m_mgr.AddPane(m_notebook, wxAuiPaneInfo().Name(_("pane_notebook")).CaptionVisible(false).Center().PaneBorder(false));
 
     m_notebook->SetFocus();
 
@@ -157,7 +157,7 @@ void MainFrame::OnMenuNew(wxCommandEvent& WXUNUSED(e))
 void MainFrame::OnMenuOpen(wxCommandEvent& WXUNUSED(e))
 {
     wxFileDialog* dialog = new wxFileDialog(this, _("Open File"), wxEmptyString, wxEmptyString,
-        _("C++ Source Files (*.cpp, *.cxx)|*.cpp;*.cxx|	C Source files(*.c) | *.c | C header files(*.h) | *.h"), wxFD_OPEN);
+        _("C++ Source Files (*.cpp, *.cxx)|*.cpp;*.cxx|C Source files(*.c)|*.c|C header files(*.h)|*.h"), wxFD_OPEN);
 
     if (dialog->ShowModal() == wxID_OK)
     {
@@ -203,7 +203,7 @@ void MainFrame::OnMenuSave(wxCommandEvent& e)
 void MainFrame::OnMenuSaveAs(wxCommandEvent& WXUNUSED(e))
 {
     wxFileDialog* dialog = new wxFileDialog(this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString,
-        _("C++ Source Files(*.cpp, *.cxx) | *.cpp; *.cxx | C Source files(*.c) | *.c | C header files(*.h) | *.h"), wxFD_SAVE);
+        _("C++ Source Files(*.cpp, *.cxx)|*.cpp;*.cxx|C Source files(*.c)|*.c|C header files(*.h)|*.h"), wxFD_SAVE);
 
     if (dialog->ShowModal() == wxID_OK)
     {
@@ -335,6 +335,8 @@ void MainFrame::OnMenuOutput(wxCommandEvent& WXUNUSED(e))
 
 void MainFrame::OnMenuTerminal(wxCommandEvent& WXUNUSED(e))
 {
+    m_mgr.GetPane("pane_output").Show();
+    m_mgr.Update();
     TerminalWidget* terminalWidget = static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window);
 
 #ifdef __WXMSW__
@@ -355,7 +357,7 @@ void MainFrame::OnMenuTerminal(wxCommandEvent& WXUNUSED(e))
 
     wxExecuteEnv env;
     env.cwd = wxPathOnly(((EditorWidget*)m_notebook->GetCurrentPage())->GetFileName());
-    env.env.insert(wxStringToStringHashMap_wxImplementation_Pair("PATH", compilerPath));
+    env.env.insert(wxStringToStringHashMap_wxImplementation_Pair("PATH", compilerPath + ";" + wxGetenv("PATH")));
 #endif
 
 #ifdef __WXMSW__
@@ -396,7 +398,7 @@ void MainFrame::OnMenuCompile(wxCommandEvent& WXUNUSED(e))
 
     wxExecuteEnv env;
     env.cwd = wxPathOnly(((EditorWidget*)m_notebook->GetCurrentPage())->GetFileName());
-    env.env.insert(wxStringToStringHashMap_wxImplementation_Pair("PATH", compilerPath));
+    env.env.insert(wxStringToStringHashMap_wxImplementation_Pair("PATH",compilerPath + ";" + wxGetenv("PATH")));
 
     wxString fileName = wxFileNameFromPath(((EditorWidget*)m_notebook->GetCurrentPage())->GetFileName());
     wxString exeName = wxString(fileName);
