@@ -1,4 +1,5 @@
 #pragma once
+
 #include <wx/wxprec.h>
 #include <wx/stc/stc.h>
 #include <wx/aui/aui.h>
@@ -8,6 +9,8 @@
 #include <wx/artprov.h>
 #include <wx/stdpaths.h>
 #include <wx/wfstream.h>
+#include <wx/treectrl.h>
 
 #include <vector>
 #include <string>
+#include <functional>

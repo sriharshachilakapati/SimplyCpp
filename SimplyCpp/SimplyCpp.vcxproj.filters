@@ -48,6 +48,9 @@
     <ClCompile Include="Core\Project.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="UI\ProjectExplorer.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico">
@@ -80,6 +83,9 @@
     </ClInclude>
     <ClInclude Include="Core\Project.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ProjectExplorer.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

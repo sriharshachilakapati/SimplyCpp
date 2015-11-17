@@ -25,6 +25,7 @@
     <ClInclude Include="UI\Application.h" />
     <ClInclude Include="UI\EditorWidget.h" />
     <ClInclude Include="UI\MainFrame.h" />
+    <ClInclude Include="UI\ProjectExplorer.h" />
     <ClInclude Include="UI\TerminalWidget.h" />
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +40,7 @@
     <ClCompile Include="UI\Application.cpp" />
     <ClCompile Include="UI\EditorWidget.cpp" />
     <ClCompile Include="UI\MainFrame.cpp" />
+    <ClCompile Include="UI\ProjectExplorer.cpp" />
     <ClCompile Include="UI\TerminalWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
