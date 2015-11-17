@@ -3,7 +3,7 @@
 
 using namespace SimplyCpp::UI;
 
-TerminalWidget::TerminalWidget(wxWindow* parent) : wxPanel(parent, wxID_ANY)
+TerminalWidget::TerminalWidget(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(400, 400))
 {
     m_inputCtrl = new wxTextCtrl(this, wxID_ANY);
     m_outputCtrl = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
@@ -41,6 +41,7 @@ TerminalWidget::TerminalWidget(wxWindow* parent) : wxPanel(parent, wxID_ANY)
 
     m_timer = new wxTimer(this, wxID_ANY);
     m_inputCtrl->Bind(wxEVT_TEXT_ENTER, &TerminalWidget::OnEnter, this);
+    m_inputCtrl->Bind(wxEVT_KEY_DOWN, &TerminalWidget::OnKeyDown, this);
 }
 
 TerminalWidget::~TerminalWidget()
@@ -63,10 +64,22 @@ void TerminalWidget::TerminateProcess()
 
     m_inputCtrl->Disable();
     m_timer->Stop();
+
+    m_history.Clear();
 }
 
 void TerminalWidget::RunCommand(const wxString& command, const wxExecuteEnv& env)
 {
+    RunCommand(command, env, [] {});
+}
+
+void TerminalWidget::RunCommand(const wxString & command, const wxExecuteEnv & env, Callback && callback)
+{
+    m_callback = callback;
+
+    m_history.Clear();
+    m_nHistoryIndex = -1;
+
     TerminateProcess();
     ClearOutput();
 
@@ -132,20 +145,22 @@ void TerminalWidget::OnTimer(wxTimerEvent& e)
 
 void TerminalWidget::OnEnter(wxCommandEvent& WXUNUSED(e))
 {
+    m_nHistoryIndex = -1;
+
     if (m_process)
     {
         if (wxProcess::Exists(m_process->GetPid()))
         {
+            wxTextOutputStream out(*m_stdin);
+
+            out << m_inputCtrl->GetValue() << '\n';
+
+            m_outputCtrl->SetDefaultStyle(wxTextAttr(wxColor(0, 100, 50)));
+            m_outputCtrl->AppendText(m_inputCtrl->GetValue());
+            m_outputCtrl->AppendText("\n");
+
             if (!m_inputCtrl->GetValue().IsEmpty())
-            {
-                wxTextOutputStream out(*m_stdin);
-
-                out << m_inputCtrl->GetValue() << '\n';
-
-                m_outputCtrl->SetDefaultStyle(wxTextAttr(wxColor(0, 100, 50)));
-                m_outputCtrl->AppendText(m_inputCtrl->GetValue());
-                m_outputCtrl->AppendText("\n");
-            }
+                m_history.Add(m_inputCtrl->GetValue());
         }
         else
         {
@@ -155,6 +170,41 @@ void TerminalWidget::OnEnter(wxCommandEvent& WXUNUSED(e))
     }
 
     m_inputCtrl->Clear();
+}
+
+void TerminalWidget::OnKeyDown(wxKeyEvent& e)
+{
+    if (e.GetKeyCode() == wxKeyCode::WXK_UP)
+    {
+        m_history.Add(m_inputCtrl->GetValue());
+        
+        if (m_nHistoryIndex == -1)
+            m_nHistoryIndex = m_history.GetCount() - 2;
+        else
+            m_nHistoryIndex--;
+
+        m_nHistoryIndex = m_nHistoryIndex < 0 ? 0 : m_nHistoryIndex;
+
+        m_inputCtrl->SetValue(m_history[m_nHistoryIndex]);
+    }
+
+    else if (e.GetKeyCode() == wxKeyCode::WXK_DOWN)
+    {
+        if (m_nHistoryIndex != -1 && m_nHistoryIndex - 1 < (int) m_history.GetCount())
+        {
+            m_nHistoryIndex++;
+
+            if (m_nHistoryIndex + 1 == (int) m_history.GetCount())
+            {
+                m_nHistoryIndex = -1;
+                m_inputCtrl->Clear();
+            }
+            else
+                m_inputCtrl->SetValue(m_history[m_nHistoryIndex]);
+        }
+    }
+
+    e.Skip();
 }
 
 void TerminalWidget::OnTerminate(wxProcessEvent& e)
@@ -179,6 +229,10 @@ void TerminalWidget::OnTerminate(wxProcessEvent& e)
     m_outputCtrl->SetDefaultStyle(wxTextAttr(wxColor(100, 100, 100)));
     m_outputCtrl->AppendText(wxString::Format("\nProcess finished with exit code %d\n", e.GetExitCode()));
     m_inputCtrl->Disable();
+
+    m_history.Clear();
+
+    m_callback();
 }
 
 void TerminalWidget::OnTerminateClick(wxCommandEvent& WXUNUSED(e))

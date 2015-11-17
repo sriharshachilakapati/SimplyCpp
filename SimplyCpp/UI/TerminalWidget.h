@@ -3,6 +3,8 @@ namespace SimplyCpp
 {
     namespace UI
     {
+        typedef std::function<void()> Callback;
+
         class TerminalWidget : public wxPanel
         {
         public:
@@ -12,11 +14,14 @@ namespace SimplyCpp
             void TerminateProcess();
             void RunCommand(const wxString& command);
             void RunCommand(const wxString& command, const wxExecuteEnv& env);
+
+            void RunCommand(const wxString& command, const wxExecuteEnv& env, Callback&& callback);
             void ClearOutput();
 
         private:
             void OnTimer(wxTimerEvent& e);
             void OnEnter(wxCommandEvent& e);
+            void OnKeyDown(wxKeyEvent& e);
             void OnTerminate(wxProcessEvent& e);
 
             void OnTerminateClick(wxCommandEvent& e);
@@ -35,6 +40,11 @@ namespace SimplyCpp
 
             wxString m_sLastCommand;
             wxExecuteEnv m_LastCommandEnv;
+
+            wxArrayString m_history;
+            int m_nHistoryIndex;
+
+            Callback m_callback;
 
             DECLARE_EVENT_TABLE()
         };
