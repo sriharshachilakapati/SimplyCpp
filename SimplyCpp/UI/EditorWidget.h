@@ -9,7 +9,6 @@ namespace SimplyCpp
         {
         public:
             EditorWidget(wxWindow* window);
-            EditorWidget(wxWindow* window, const wxString& code);
 
             bool CodeChanged();
             bool SavedOnce();

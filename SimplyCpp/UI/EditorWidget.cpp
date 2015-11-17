@@ -3,17 +3,10 @@
 
 using namespace SimplyCpp::UI;
 
-EditorWidget::EditorWidget(wxWindow* window) : wxStyledTextCtrl(window, wxID_ANY)
+EditorWidget::EditorWidget(wxWindow* window) : wxStyledTextCtrl(window, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER)
 {
     InitEditor();
     m_sOriginalCode = GetText();
-}
-
-EditorWidget::EditorWidget(wxWindow* window, const wxString& code) : wxStyledTextCtrl(window, wxID_ANY)
-{
-    InitEditor();
-    SetText(code);
-    m_sOriginalCode = code;
 }
 
 void EditorWidget::InitEditor()
