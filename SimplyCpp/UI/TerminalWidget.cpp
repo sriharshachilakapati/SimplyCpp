@@ -59,6 +59,8 @@ void TerminalWidget::TerminateProcess()
             process->SetNextHandler(NULL);
 
             process->CloseOutput();
+
+            wxKill(process->GetPid(), wxSignal::wxSIGKILL);
             wxDELETE(m_process);
         }
 
@@ -232,7 +234,8 @@ void TerminalWidget::OnTerminate(wxProcessEvent& e)
 
     m_history.Clear();
 
-    m_callback();
+    if (e.GetExitCode() == 0)
+        m_callback();
 }
 
 void TerminalWidget::OnTerminateClick(wxCommandEvent& WXUNUSED(e))
