@@ -42,6 +42,8 @@ namespace SimplyCpp
             void OnMenuCompileAndRun(wxCommandEvent& e);
             void OnMenuAbout(wxCommandEvent& e);
 
+            void DoCompile(Callback&& callback);
+
             wxAuiManager  m_mgr;
             wxAuiNotebook *m_notebook;
             wxConfig      *m_config;

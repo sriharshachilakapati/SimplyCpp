@@ -93,6 +93,7 @@ void MainFrame::CreateMenuBar()
 
     menuCompile->Append(ID_COMPILE, _("&Compile\tAlt-F9"), _("Compile the current file"));
     menuCompile->Append(ID_RUN, _("&Run\tCtrl-F9"), _("Run the program"));
+    menuCompile->Append(ID_COMPILE_AND_RUN, _("&Compile and Run\tF9"), _("Compile and Run the program"));
 
     menuWindow->Append(ID_PROJECT_EXPLORER, "Project Explorer", "Open the project explorer pane");
     menuWindow->Append(ID_PROPERTIES, "File Properties", "See the properties of the current file");
@@ -379,39 +380,7 @@ void MainFrame::OnMenuProjectCreate(wxCommandEvent& WXUNUSED(e))
 
 void MainFrame::OnMenuCompile(wxCommandEvent& WXUNUSED(e))
 {
-    TerminalWidget* terminalWidget = static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window);
-
-    wxString executablePath = wxStandardPaths::Get().GetExecutablePath();
-    wxString executableDir = wxPathOnly(executablePath);
-
-    wxString compilerPath = wxPathOnly(executableDir) + "\\TDM-GCC-32\\bin\\";
-
-    if (!wxFileExists(compilerPath + "g++.exe"))
-        compilerPath = executableDir + "\\TDM-GCC-32\\bin\\";
-
-    if (!wxFileExists(compilerPath + "g++.exe"))
-    {
-        wxMessageBox("Error, cannot find the compiler. Are you sure there is "
-            "'TDM-GCC-32' folder in '" + executableDir + "' ?", "SimplyCpp error", wxICON_ERROR, this);
-        return;
-    }
-
-    wxExecuteEnv env;
-    env.cwd = wxPathOnly(((EditorWidget*)m_notebook->GetCurrentPage())->GetFileName());
-    env.env.insert(wxStringToStringHashMap_wxImplementation_Pair("PATH",compilerPath + ";" + wxGetenv("PATH")));
-
-    wxString fileName = wxFileNameFromPath(((EditorWidget*)m_notebook->GetCurrentPage())->GetFileName());
-    wxString exeName = wxString(fileName);
-    exeName.Replace(".cpp", ".exe");
-    exeName.Replace(".c", ".exe");
-
-    if (fileName.Contains(".h"))
-    {
-        wxMessageBox("Error, cannot run a header file", "SimplyCpp Error", wxICON_ERROR);
-        return;
-    }
-
-    terminalWidget->RunCommand(compilerPath + "g++.exe " + fileName + " -s -o " + exeName, env);
+    DoCompile([] {});
 }
 
 void MainFrame::OnMenuRun(wxCommandEvent& WXUNUSED(e))
@@ -444,12 +413,51 @@ void MainFrame::OnMenuRun(wxCommandEvent& WXUNUSED(e))
 
 void MainFrame::OnMenuCompileAndRun(wxCommandEvent& e)
 {
-    OnMenuCompile(e);
-    OnMenuRun(e);
+    DoCompile([this, &e]()
+    {
+        OnMenuRun(e);
+    });
 }
 
 void MainFrame::OnMenuAbout(wxCommandEvent& WXUNUSED(e))
 {
+}
+
+void SimplyCpp::UI::MainFrame::DoCompile(Callback&& callback)
+{
+    TerminalWidget* terminalWidget = static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window);
+
+    wxString executablePath = wxStandardPaths::Get().GetExecutablePath();
+    wxString executableDir = wxPathOnly(executablePath);
+
+    wxString compilerPath = wxPathOnly(executableDir) + "\\TDM-GCC-32\\bin\\";
+
+    if (!wxFileExists(compilerPath + "g++.exe"))
+        compilerPath = executableDir + "\\TDM-GCC-32\\bin\\";
+
+    if (!wxFileExists(compilerPath + "g++.exe"))
+    {
+        wxMessageBox("Error, cannot find the compiler. Are you sure there is "
+            "'TDM-GCC-32' folder in '" + executableDir + "' ?", "SimplyCpp error", wxICON_ERROR, this);
+        return;
+    }
+
+    wxExecuteEnv env;
+    env.cwd = wxPathOnly(((EditorWidget*)m_notebook->GetCurrentPage())->GetFileName());
+    env.env.insert(wxStringToStringHashMap_wxImplementation_Pair("PATH", compilerPath + ";" + wxGetenv("PATH")));
+
+    wxString fileName = wxFileNameFromPath(((EditorWidget*)m_notebook->GetCurrentPage())->GetFileName());
+    wxString exeName = wxString(fileName);
+    exeName.Replace(".cpp", ".exe");
+    exeName.Replace(".c", ".exe");
+
+    if (fileName.Contains(".h"))
+    {
+        wxMessageBox("Error, cannot run a header file", "SimplyCpp Error", wxICON_ERROR);
+        return;
+    }
+
+    terminalWidget->RunCommand(compilerPath + "g++.exe " + fileName + " -s -o " + exeName, env, [this, callback]() { callback(); });
 }
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -469,6 +477,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 
     EVT_MENU(ID_COMPILE, MainFrame::OnMenuCompile)
     EVT_MENU(ID_RUN, MainFrame::OnMenuRun)
+    EVT_MENU(ID_COMPILE_AND_RUN, MainFrame::OnMenuCompileAndRun)
 
     EVT_MENU(ID_PROJECT_EXPLORER, MainFrame::OnMenuProjectExplorer)
     EVT_MENU(ID_PROPERTIES, MainFrame::OnMenuProperties)
