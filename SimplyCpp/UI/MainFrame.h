@@ -1,6 +1,7 @@
 #pragma once
 #include "EditorWidget.h"
 #include "TerminalWidget.h"
+#include "ProjectExplorer.h"
 
 namespace SimplyCpp
 {

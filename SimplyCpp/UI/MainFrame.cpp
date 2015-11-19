@@ -13,9 +13,6 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
     CreateMenuBar();
     CreateStatusBar(2);
 
-    wxTextCtrl* text1 = new wxTextCtrl(this, wxID_ANY, _T(""),
-        wxDefaultPosition, wxSize(200, 150),
-        wxNO_BORDER);
     wxTextCtrl* text2 = new wxTextCtrl(this, wxID_ANY, _T(""),
         wxDefaultPosition, wxSize(200, 150),
         wxNO_BORDER);
@@ -26,10 +23,11 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
         wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_MIDDLE_CLICK_CLOSE);
     m_notebook->AddPage(new EditorWidget(this), _("Untitled"));
 
-    text1->SetEditable(false);
     text2->SetEditable(false);
 
-    m_mgr.AddPane(text1, wxAuiPaneInfo().Name(_("pane_project")).Caption(_("Project Explorer")).Left());
+    ProjectExplorer* pExplorer = new ProjectExplorer(this);
+
+    m_mgr.AddPane(pExplorer, wxAuiPaneInfo().Name(_("pane_project")).Caption(_("Project Explorer")).Left());
     m_mgr.AddPane(text2, wxAuiPaneInfo().Name(_("pane_props")).Caption(_("Properties")).Right());
     m_mgr.AddPane(terminal, wxAuiPaneInfo().Name(_("pane_output")).Caption(_("Output")).Bottom().MaximizeButton(true));
     m_mgr.AddPane(m_notebook, wxAuiPaneInfo().Name(_("pane_notebook")).CaptionVisible(false).Center().PaneBorder(false));
@@ -259,6 +257,7 @@ void MainFrame::OnMenuExit(wxCommandEvent& e)
         }
     }
 
+    static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window)->TerminateProcess();
     Destroy();
 }
 
