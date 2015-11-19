@@ -60,7 +60,7 @@ void TerminalWidget::TerminateProcess()
 
             process->CloseOutput();
 
-            wxKill(process->GetPid(), wxSignal::wxSIGKILL);
+            wxKill(process->GetPid(), wxSignal::wxSIGTERM);
             wxDELETE(m_process);
         }
 
