@@ -3,6 +3,7 @@
 #include "Application.h"
 
 using namespace SimplyCpp::UI;
+using namespace SimplyCpp::Core;
 
 bool Application::OnInit()
 {

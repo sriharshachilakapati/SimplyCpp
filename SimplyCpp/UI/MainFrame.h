@@ -3,6 +3,8 @@
 #include "TerminalWidget.h"
 #include "ProjectExplorer.h"
 
+#include "../Core/Config.h"
+
 namespace SimplyCpp
 {
     namespace UI
@@ -47,7 +49,6 @@ namespace SimplyCpp
 
             wxAuiManager  m_mgr;
             wxAuiNotebook *m_notebook;
-            wxConfig      *m_config;
         };
 
         enum MenuIDs

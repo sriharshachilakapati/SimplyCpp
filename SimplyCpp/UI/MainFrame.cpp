@@ -2,11 +2,10 @@
 #include "MainFrame.h"
 
 using namespace SimplyCpp::UI;
+using namespace SimplyCpp::Core;
 
 MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosition, wxSize(800, 600))
 {
-    m_config = new wxConfig(_("SimplyCpp-2.0.1"));
-
     SetIcon(wxICON(ID_ICON));
     m_mgr.SetManagedWindow(this);
 
@@ -46,9 +45,9 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
     SetStatusWidths(2, widths);
     SetStatusText(message, 1);
 
-    if (m_config->Exists(_("Layer.Perspective")))
+    if (AppConfig->Exists(_("Layer.Perspective")))
     {
-        wxString str = m_config->Read(_("Layer.Perspective"));
+        wxString str = AppConfig->Read(_("Layer.Perspective"));
         m_mgr.LoadPerspective(str);
     }
 
@@ -58,10 +57,10 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
 
 MainFrame::~MainFrame()
 {
-    m_config->Write(_("Layer.Perspective"), m_mgr.SavePerspective());
+    // Write to AppConfig
+    AppConfig->Write(_("Layer.Perspective"), m_mgr.SavePerspective());
 
     m_mgr.UnInit();
-    delete m_config;
 }
 
 void MainFrame::CreateMenuBar()
