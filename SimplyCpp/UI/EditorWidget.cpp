@@ -212,6 +212,7 @@ void EditorWidget::OnTextChange(wxStyledTextEvent& WXUNUSED(e))
         return;
 
     m_nMaxLines = numLines;
+
     const int padding = 15;
 
     SetMarginWidth(0, TextWidth(MarginGetStyle(0), wxString::Format("%d", numLines)) + padding);

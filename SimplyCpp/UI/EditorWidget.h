@@ -39,8 +39,6 @@ namespace SimplyCpp
                 case ']':
                 case '{':
                 case '}':
-                case '<':
-                case '>':
                     return true;
                 }
 
