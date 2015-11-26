@@ -170,7 +170,7 @@ void EditorWidget::OnMarginClick(wxStyledTextEvent& e)
     }
 }
 
-void EditorWidget::OnUpdateUI(wxStyledTextEvent& WXUNUSED(e))
+void EditorWidget::OnUpdateUI(wxStyledTextEvent& e)
 {
     static int lastCaretPos = 0;
     int caretPos = GetCurrentPos();
@@ -202,6 +202,8 @@ void EditorWidget::OnUpdateUI(wxStyledTextEvent& WXUNUSED(e))
             // Turn off brace matching
             BraceHighlight(wxSTC_INVALID_POSITION, wxSTC_INVALID_POSITION);
     }
+
+    OnTextChange(e);
 }
 
 void EditorWidget::OnTextChange(wxStyledTextEvent& WXUNUSED(e))
@@ -214,8 +216,9 @@ void EditorWidget::OnTextChange(wxStyledTextEvent& WXUNUSED(e))
     m_nMaxLines = numLines;
 
     const int padding = 15;
+    const int zoom = GetZoom() * 2;
 
-    SetMarginWidth(0, TextWidth(MarginGetStyle(0), wxString::Format("%d", numLines)) + padding);
+    SetMarginWidth(0, std::max(zoom, 0) + TextWidth(MarginGetStyle(0), wxString::Format("%d", numLines)) + padding);
 }
 
 bool EditorWidget::CodeChanged()
