@@ -10,6 +10,7 @@
 #include <wx/stdpaths.h>
 #include <wx/wfstream.h>
 #include <wx/treectrl.h>
+#include <wx/listctrl.h>
 
 #include <vector>
 #include <string>

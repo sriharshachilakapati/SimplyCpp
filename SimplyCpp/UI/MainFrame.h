@@ -2,6 +2,7 @@
 #include "EditorWidget.h"
 #include "TerminalWidget.h"
 #include "ProjectExplorer.h"
+#include "ErrorList.h"
 
 #include "../Core/Config.h"
 

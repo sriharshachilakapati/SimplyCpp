@@ -17,6 +17,7 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
         wxNO_BORDER);
 
     TerminalWidget* terminal = new TerminalWidget(this);
+    ErrorList* errorList = new ErrorList(this);
 
     m_notebook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
         wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_MIDDLE_CLICK_CLOSE);
@@ -29,6 +30,7 @@ MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosit
     m_mgr.AddPane(pExplorer, wxAuiPaneInfo().Name(_("pane_project")).Caption(_("Project Explorer")).Left());
     m_mgr.AddPane(text2, wxAuiPaneInfo().Name(_("pane_props")).Caption(_("Properties")).Right());
     m_mgr.AddPane(terminal, wxAuiPaneInfo().Name(_("pane_output")).Caption(_("Output")).Bottom().MaximizeButton(true));
+    m_mgr.AddPane(errorList, wxAuiPaneInfo().Name(_("pane_errors")).Caption(_("Errors")).Layer(0).Bottom());
     m_mgr.AddPane(m_notebook, wxAuiPaneInfo().Name(_("pane_notebook")).CaptionVisible(false).Center().PaneBorder(false));
 
     m_notebook->SetFocus();
@@ -455,7 +457,15 @@ void SimplyCpp::UI::MainFrame::DoCompile(Callback&& callback)
         return;
     }
 
-    terminalWidget->RunCommand(compilerPath + "g++.exe " + fileName + " -s -o " + exeName, env, [this, callback]() { callback(); });
+    terminalWidget->RunCommand(compilerPath + "g++.exe " + fileName + " -s -o " + exeName, env, [this, callback]()
+    {
+        ErrorList* errorsList = static_cast<ErrorList*>(m_mgr.GetPane("pane_errors").window);
+        errorsList->Clear();
+
+
+
+        callback();
+    });
 }
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)

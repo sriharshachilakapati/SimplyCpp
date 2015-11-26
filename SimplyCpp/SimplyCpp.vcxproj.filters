@@ -54,6 +54,9 @@
     <ClCompile Include="Core\Config.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="UI\ErrorList.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico">
@@ -92,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="Core\Config.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ErrorList.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

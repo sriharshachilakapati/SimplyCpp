@@ -25,6 +25,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UI\Application.h" />
     <ClInclude Include="UI\EditorWidget.h" />
+    <ClInclude Include="UI\ErrorList.h" />
     <ClInclude Include="UI\MainFrame.h" />
     <ClInclude Include="UI\ProjectExplorer.h" />
     <ClInclude Include="UI\TerminalWidget.h" />
@@ -41,6 +42,7 @@
     </ClCompile>
     <ClCompile Include="UI\Application.cpp" />
     <ClCompile Include="UI\EditorWidget.cpp" />
+    <ClCompile Include="UI\ErrorList.cpp" />
     <ClCompile Include="UI\MainFrame.cpp" />
     <ClCompile Include="UI\ProjectExplorer.cpp" />
     <ClCompile Include="UI\TerminalWidget.cpp" />
