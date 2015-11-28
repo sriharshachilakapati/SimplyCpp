@@ -39,7 +39,13 @@ void ErrorList::Clear()
     InsertColumn(3, col3);
 }
 
-void ErrorList::Insert(const wxString& file, int line, ListID type, const wxString& message)
+void ErrorList::Insert(const wxString& file, int line, ErrorType type, const wxString& message)
 {
+    long index = InsertItem(GetItemCount(), file);
+    SetItem(index, 1, wxString::Format("%d", line));
+    SetItem(index, 2, type == ErrorType::TYPE_ERROR ? "Error" : "Warning");
+    SetItem(index, 3, message);
 
+    type == ErrorType::TYPE_ERROR ? SetItemTextColour(index, wxColor(150, 0, 0))
+                                  : SetItemTextColour(index, wxColor(100, 80, 0));
 }

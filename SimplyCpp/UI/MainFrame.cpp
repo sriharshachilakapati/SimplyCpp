@@ -462,7 +462,8 @@ void SimplyCpp::UI::MainFrame::DoCompile(Callback&& callback)
         ErrorList* errorsList = static_cast<ErrorList*>(m_mgr.GetPane("pane_errors").window);
         errorsList->Clear();
 
-
+        errorsList->Insert("Untitled", 1, ErrorType::TYPE_ERROR, "Description");
+        errorsList->Insert("Untitled", 2, ErrorType::TYPE_WARNING, "Description");
 
         callback();
     });

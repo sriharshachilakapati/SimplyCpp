@@ -6,6 +6,7 @@ namespace SimplyCpp
     namespace UI
     {
         enum ListID;
+        enum ErrorType;
 
         class ErrorList : public wxListCtrl
         {
@@ -13,7 +14,7 @@ namespace SimplyCpp
             ErrorList(wxWindow* parent);
 
             void Clear();
-            void Insert(const wxString& file, int line, ListID type, const wxString& message);
+            void Insert(const wxString& file, int line, ErrorType type, const wxString& message);
         };
 
         enum ListID
@@ -22,6 +23,12 @@ namespace SimplyCpp
             LINE,
             TYPE,
             DESCRIPTION
+        };
+
+        enum ErrorType
+        {
+            TYPE_WARNING,
+            TYPE_ERROR,
         };
     }
 }
