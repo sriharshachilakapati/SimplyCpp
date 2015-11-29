@@ -65,6 +65,48 @@ MainFrame::~MainFrame()
     m_mgr.UnInit();
 }
 
+void SimplyCpp::UI::MainFrame::ParseCompilerOutput()
+{
+    ErrorList* errorsList = static_cast<ErrorList*>(m_mgr.GetPane("pane_errors").window);
+    errorsList->Clear();
+
+    TerminalWidget* output = static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window);
+
+    // The regex for errors is (.*):(\d):(\d):\serror:\s(.*)
+    // The regex for warnings is (.*):(\d):(\d):\swarning:\s(.*)
+    wxRegEx error("(.*):(\\d*):(\\d*):\\serror:\\s(.*)", wxRE_ADVANCED + wxRE_ICASE);
+    wxRegEx warning("(.*):(\\d*):(\\d*):\\swarning:\\s(.*)", wxRE_ADVANCED + wxRE_ICASE);
+
+    // Get every line in the terminal output and try parse it with regex
+    for (int i = 0; i < output->GetNumOutputLines(); i++)
+    {
+        wxString line = output->GetOutputLine(i);
+
+        if (error.Matches(line))
+        {
+            wxString fileName = error.GetMatch(line, 1);
+            int lineNo = wxAtoi(error.GetMatch(line, 2));
+            wxString message = error.GetMatch(line, 4);
+
+            errorsList->Insert(fileName, lineNo, ErrorType::TYPE_ERROR, message);
+        }
+    }
+
+    for (int i = 0; i < output->GetNumOutputLines(); i++)
+    {
+        wxString line = output->GetOutputLine(i);
+
+        if (warning.Matches(line))
+        {
+            wxString fileName = warning.GetMatch(line, 1);
+            int lineNo = wxAtoi(warning.GetMatch(line, 2));
+            wxString message = warning.GetMatch(line, 4);
+
+            errorsList->Insert(fileName, lineNo, ErrorType::TYPE_WARNING, message);
+        }
+    }
+}
+
 void MainFrame::CreateMenuBar()
 {
     wxMenuBar* menuBar = new wxMenuBar();
@@ -457,15 +499,14 @@ void SimplyCpp::UI::MainFrame::DoCompile(Callback&& callback)
         return;
     }
 
-    terminalWidget->RunCommand(compilerPath + "g++.exe " + fileName + " -s -o " + exeName, env, [this, callback]()
+    terminalWidget->RunCommand(compilerPath + "g++.exe " + fileName + " -Wall -Wextra -s -o " + exeName, env, [this, callback]()
     {
-        ErrorList* errorsList = static_cast<ErrorList*>(m_mgr.GetPane("pane_errors").window);
-        errorsList->Clear();
-
-        errorsList->Insert("Untitled", 1, ErrorType::TYPE_ERROR, "Description");
-        errorsList->Insert("Untitled", 2, ErrorType::TYPE_WARNING, "Description");
-
+        ParseCompilerOutput();
         callback();
+    },
+    [this]()
+    {
+        ParseCompilerOutput();
     });
 }
 

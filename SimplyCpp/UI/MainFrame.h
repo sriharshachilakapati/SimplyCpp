@@ -19,6 +19,8 @@ namespace SimplyCpp
         private:
             DECLARE_EVENT_TABLE()
 
+            void ParseCompilerOutput();
+
             void CreateMenuBar();
 
             void OnEditorClose(wxAuiNotebookEvent& e);
