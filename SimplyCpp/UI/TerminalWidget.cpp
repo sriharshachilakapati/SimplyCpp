@@ -78,9 +78,10 @@ void TerminalWidget::RunCommand(const wxString& command, const wxExecuteEnv& env
     RunCommand(command, env, [] {});
 }
 
-void TerminalWidget::RunCommand(const wxString & command, const wxExecuteEnv & env, Callback && callback)
+void TerminalWidget::RunCommand(const wxString & command, const wxExecuteEnv & env, Callback && callbackSuccess, Callback && callbackError)
 {
-    m_callback = callback;
+    m_callbackSuccess = callbackSuccess;
+    m_callbackError = callbackError;
 
     m_history.Clear();
     m_nHistoryIndex = -1;
@@ -115,6 +116,16 @@ void TerminalWidget::RunCommand(const wxString& command)
 void TerminalWidget::ClearOutput()
 {
     m_outputCtrl->Clear();
+}
+
+int SimplyCpp::UI::TerminalWidget::GetNumOutputLines()
+{
+    return m_outputCtrl->GetNumberOfLines();
+}
+
+wxString SimplyCpp::UI::TerminalWidget::GetOutputLine(int line)
+{
+    return m_outputCtrl->GetLineText(line);
 }
 
 void TerminalWidget::OnTimer(wxTimerEvent& e)
@@ -238,7 +249,9 @@ void TerminalWidget::OnTerminate(wxProcessEvent& e)
     m_history.Clear();
 
     if (e.GetExitCode() == 0)
-        m_callback();
+        m_callbackSuccess();
+    else
+        m_callbackError();
 }
 
 void TerminalWidget::OnTerminateClick(wxCommandEvent& WXUNUSED(e))

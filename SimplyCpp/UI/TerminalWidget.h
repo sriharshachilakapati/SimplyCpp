@@ -14,9 +14,12 @@ namespace SimplyCpp
             void TerminateProcess();
             void RunCommand(const wxString& command);
             void RunCommand(const wxString& command, const wxExecuteEnv& env);
+            void RunCommand(const wxString& command, const wxExecuteEnv& env, Callback&& callbackSuccess, Callback&& callbackError = []() {});
 
-            void RunCommand(const wxString& command, const wxExecuteEnv& env, Callback&& callback);
             void ClearOutput();
+
+            int GetNumOutputLines();
+            wxString GetOutputLine(int line);
 
         private:
             void OnTimer(wxTimerEvent& e);
@@ -44,7 +47,8 @@ namespace SimplyCpp
             wxArrayString m_history;
             int m_nHistoryIndex;
 
-            Callback m_callback;
+            Callback m_callbackSuccess;
+            Callback m_callbackError;
 
             DECLARE_EVENT_TABLE()
         };
