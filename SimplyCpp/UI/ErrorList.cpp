@@ -41,11 +41,31 @@ void ErrorList::Clear()
 
 void ErrorList::Insert(const wxString& file, int line, ErrorType type, const wxString& message)
 {
+    wxString errorType;
+    wxColor itemColor;
+
+    switch (type)
+    {
+    case ErrorType::TYPE_ERROR:
+        itemColor = wxColor(150, 0, 0);
+        errorType = "Error";
+        break;
+
+    case ErrorType::TYPE_FATAL:
+        itemColor = wxColor(200, 0, 0);
+        errorType = "Fatal";
+        break;
+
+    case ErrorType::TYPE_WARNING:
+        itemColor = wxColor(100, 80, 0);
+        errorType = "Warning";
+        break;
+    }
+
     long index = InsertItem(GetItemCount(), file);
     SetItem(index, 1, wxString::Format("%d", line));
-    SetItem(index, 2, type == ErrorType::TYPE_ERROR ? "Error" : "Warning");
+    SetItem(index, 2, errorType);
     SetItem(index, 3, message);
 
-    type == ErrorType::TYPE_ERROR ? SetItemTextColour(index, wxColor(150, 0, 0))
-                                  : SetItemTextColour(index, wxColor(100, 80, 0));
+    SetItemTextColour(index, itemColor);
 }

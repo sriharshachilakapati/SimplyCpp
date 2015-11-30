@@ -72,12 +72,29 @@ void SimplyCpp::UI::MainFrame::ParseCompilerOutput()
 
     TerminalWidget* output = static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window);
 
+    // The regex for fatals is (.*):(\d):(\d):\sfatal\\serror:\s(.*)
     // The regex for errors is (.*):(\d):(\d):\serror:\s(.*)
     // The regex for warnings is (.*):(\d):(\d):\swarning:\s(.*)
     wxRegEx error("(.*):(\\d*):(\\d*):\\serror:\\s(.*)", wxRE_ADVANCED + wxRE_ICASE);
+    wxRegEx fatal("(.*):(\\d*):(\\d*):\\sfatal\\serror:\\s(.*)", wxRE_ADVANCED + wxRE_ICASE);
     wxRegEx warning("(.*):(\\d*):(\\d*):\\swarning:\\s(.*)", wxRE_ADVANCED + wxRE_ICASE);
 
-    // Get every line in the terminal output and try parse it with regex
+    // Insert fatal errors first into the list
+    for (int i = 0; i < output->GetNumOutputLines(); i++)
+    {
+        wxString line = output->GetOutputLine(i);
+
+        if (fatal.Matches(line))
+        {
+            wxString fileName = fatal.GetMatch(line, 1);
+            int lineNo = wxAtoi(fatal.GetMatch(line, 2));
+            wxString message = fatal.GetMatch(line, 4);
+
+            errorsList->Insert(fileName, lineNo, ErrorType::TYPE_FATAL, message);
+        }
+    }
+
+    // Insert normal errors next
     for (int i = 0; i < output->GetNumOutputLines(); i++)
     {
         wxString line = output->GetOutputLine(i);
@@ -92,6 +109,7 @@ void SimplyCpp::UI::MainFrame::ParseCompilerOutput()
         }
     }
 
+    // Finally let the warnings get into the list
     for (int i = 0; i < output->GetNumOutputLines(); i++)
     {
         wxString line = output->GetOutputLine(i);

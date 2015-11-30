@@ -29,6 +29,7 @@ namespace SimplyCpp
         {
             TYPE_WARNING,
             TYPE_ERROR,
+            TYPE_FATAL
         };
     }
 }
