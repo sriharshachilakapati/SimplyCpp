@@ -101,8 +101,10 @@ void TerminalWidget::RunCommand(const wxString & command, const wxExecuteEnv & e
     m_stdin = m_process->GetOutputStream();
     m_stderr = m_process->GetErrorStream();
 
-    m_process->Bind(wxEVT_END_PROCESS, &TerminalWidget::OnTerminate, this);
     m_timer->Start(250);
+    PollOutput(*m_timer);
+
+    m_process->Bind(wxEVT_END_PROCESS, &TerminalWidget::OnTerminate, this);
 
     m_inputCtrl->Enable();
     m_inputCtrl->SetFocus();
@@ -130,33 +132,7 @@ wxString SimplyCpp::UI::TerminalWidget::GetOutputLine(int line)
 
 void TerminalWidget::OnTimer(wxTimerEvent& e)
 {
-    if (m_process)
-    {
-        if (!wxProcess::Exists(m_process->GetPid()))
-        {
-            e.GetTimer().Stop();
-            m_inputCtrl->Disable();
-            return;
-        }
-
-        m_outputCtrl->SetDefaultStyle(wxTextAttr(*wxRED));
-        while (m_stderr->CanRead())
-        {
-            char buffer[4096];
-            buffer[m_stderr->Read(buffer, WXSIZEOF(buffer) - 1).LastRead()] = '\0';
-            m_outputCtrl->AppendText(buffer);
-        }
-
-        m_outputCtrl->SetDefaultStyle(wxTextAttr(*wxBLACK));
-        while (m_stdout->CanRead())
-        {
-            char buffer[4096];
-            buffer[m_stdout->Read(buffer, WXSIZEOF(buffer) - 1).LastRead()] = '\0';
-            m_outputCtrl->AppendText(buffer);
-        }
-
-        m_inputCtrl->Enable();
-    }
+    PollOutput(e.GetTimer());
 }
 
 void TerminalWidget::OnEnter(wxCommandEvent& WXUNUSED(e))
@@ -252,6 +228,37 @@ void TerminalWidget::OnTerminate(wxProcessEvent& e)
         m_callbackSuccess();
     else
         m_callbackError();
+}
+
+void SimplyCpp::UI::TerminalWidget::PollOutput(wxTimer& timer)
+{
+    if (m_process)
+    {
+        if (!wxProcess::Exists(m_process->GetPid()))
+        {
+            timer.Stop();
+            m_inputCtrl->Disable();
+            return;
+        }
+
+        m_outputCtrl->SetDefaultStyle(wxTextAttr(*wxRED));
+        while (m_stderr->CanRead())
+        {
+            char buffer[4096];
+            buffer[m_stderr->Read(buffer, WXSIZEOF(buffer) - 1).LastRead()] = '\0';
+            m_outputCtrl->AppendText(buffer);
+        }
+
+        m_outputCtrl->SetDefaultStyle(wxTextAttr(*wxBLACK));
+        while (m_stdout->CanRead())
+        {
+            char buffer[4096];
+            buffer[m_stdout->Read(buffer, WXSIZEOF(buffer) - 1).LastRead()] = '\0';
+            m_outputCtrl->AppendText(buffer);
+        }
+
+        m_inputCtrl->Enable();
+    }
 }
 
 void TerminalWidget::OnTerminateClick(wxCommandEvent& WXUNUSED(e))

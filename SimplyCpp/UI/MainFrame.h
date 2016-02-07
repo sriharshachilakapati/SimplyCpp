@@ -22,6 +22,7 @@ namespace SimplyCpp
             void ParseCompilerOutput();
 
             void CreateMenuBar();
+            void CreateToolBar();
 
             void OnEditorClose(wxAuiNotebookEvent& e);
             void OnWindowClose(wxCloseEvent& e);

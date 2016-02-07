@@ -27,6 +27,8 @@ namespace SimplyCpp
             void OnKeyDown(wxKeyEvent& e);
             void OnTerminate(wxProcessEvent& e);
 
+            void PollOutput(wxTimer& timer);
+
             void OnTerminateClick(wxCommandEvent& e);
             void OnRestartClick(wxCommandEvent& e);
 

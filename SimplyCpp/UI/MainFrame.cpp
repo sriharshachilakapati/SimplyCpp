@@ -172,6 +172,16 @@ void MainFrame::CreateMenuBar()
     menuBar->EnableTop(2, false);
 }
 
+void MainFrame::CreateToolBar()
+{
+    wxToolBar* toolBar = wxFrame::CreateToolBar();
+
+
+
+    toolBar->Realize();
+    SetToolBar(toolBar);
+}
+
 void MainFrame::OnEditorClose(wxAuiNotebookEvent& e)
 {
     EditorWidget* editorPage = static_cast<EditorWidget*>(m_notebook->GetPage(e.GetSelection()));
@@ -241,6 +251,16 @@ void MainFrame::OnMenuOpen(wxCommandEvent& WXUNUSED(e))
         editor->LoadFile(path);
 
         m_notebook->AddPage(editor, file, true);
+
+        ProjectExplorer* project_explorer = dynamic_cast<ProjectExplorer*>(m_mgr.GetPane("pane_project").window);
+        
+        Project project;
+        project.SetName(dialog->GetFilename().ToStdString());
+
+        OpenProjects.push_back(project);
+        project_explorer->AppendItem(project_explorer->GetRootItem(), file);
+        project_explorer->Update();
+
         m_mgr.Update();
     }
 
