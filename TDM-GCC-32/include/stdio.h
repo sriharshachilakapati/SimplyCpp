@@ -10,7 +10,13 @@
  * NOTE: The file manipulation functions provided by Microsoft seem to
  * work with either slash (/) or backslash (\) as the directory separator.
  *
+ * NOTE: The file is tampered by Sri Harsha Chilakapati on line numbers 19
+ * and 264, 265, 266 to make sure that ANSI STDIO is used, and a flush is
+ * performed right after a printf.
+ *
  */
+
+#define __USE_MINGW_ANSI_STDIO 1
 
 #ifndef _STDIO_H_
 #define	_STDIO_H_
@@ -255,6 +261,9 @@ int printf (const char *__format, ...)
   __builtin_va_list __local_argv; __builtin_va_start( __local_argv, __format );
   __retval = __mingw_vprintf( __format, __local_argv );
   __builtin_va_end( __local_argv );
+
+  fflush(stdout);
+
   return __retval;
 }
 
@@ -534,7 +543,7 @@ _CRTIMP int __cdecl __MINGW_NOTHROW	fileno (FILE*);
 #include <sys/types.h>
 __CRT_INLINE FILE* __cdecl __MINGW_NOTHROW fopen64 (const char* filename, const char* mode)
 {
-  return fopen (filename, mode); 
+  return fopen (filename, mode);
 }
 
 int __cdecl __MINGW_NOTHROW fseeko64 (FILE*, off64_t, int);
@@ -580,7 +589,7 @@ _CRTIMP int __cdecl __MINGW_NOTHROW	swprintf (wchar_t*, const wchar_t*, ...);
 _CRTIMP int __cdecl __MINGW_NOTHROW	vswprintf (wchar_t*, const wchar_t*, __VALIST);
 #endif
 
-#ifdef __MSVCRT__ 
+#ifdef __MSVCRT__
 _CRTIMP wchar_t* __cdecl __MINGW_NOTHROW fgetws (wchar_t*, int, FILE*);
 _CRTIMP int __cdecl __MINGW_NOTHROW	fputws (const wchar_t*, FILE*);
 _CRTIMP wint_t __cdecl __MINGW_NOTHROW	getwc (FILE*);
