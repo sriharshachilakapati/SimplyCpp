@@ -17,6 +17,7 @@ add_executable(
     ${PROJECT_NAME}
     src/stdafx.h
     src/stdafx.cpp
+    src/UI/Utils.h
     src/UI/Application.h
     src/UI/Application.cpp
     src/UI/EditorWidget.h

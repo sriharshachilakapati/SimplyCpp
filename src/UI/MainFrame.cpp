@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "MainFrame.h"
+#include "Utils.h"
 
 using namespace SimplyCpp::UI;
 using namespace SimplyCpp::Core;
@@ -223,42 +224,45 @@ void MainFrame::OnMenuOpen(wxCommandEvent& WXUNUSED(e))
     wxFileDialog* dialog = new wxFileDialog(this, _("Open File"), wxEmptyString, wxEmptyString,
         _("C++ Source Files (*.cpp, *.cxx)|*.cpp;*.cxx|C Source files(*.c)|*.c|C header files(*.h)|*.h"), wxFD_OPEN);
 
-    if (dialog->ShowModal() == wxID_OK)
+    SimplyCpp::UI::ShowWindowModalThenDo(dialog, [this, dialog] (int returnCode)
     {
-        wxString file = dialog->GetFilename();
-        wxString path = dialog->GetPath();
-
-        if (m_notebook->GetPageCount() != 0)
+        if (returnCode == wxID_OK)
         {
-            EditorWidget* currentEditor = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
-
-            if (!currentEditor->CodeChanged() && !currentEditor->GetText().compare(_("")))
+            wxString file = dialog->GetFilename();
+            wxString path = dialog->GetPath();
+            
+            if (m_notebook->GetPageCount() != 0)
             {
-                currentEditor->LoadFile(path);
-                m_notebook->SetPageText(m_notebook->GetPageIndex(m_notebook->GetCurrentPage()), file);
-                m_mgr.Update();
-                return;
+                EditorWidget* currentEditor = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+                
+                if (!currentEditor->CodeChanged() && !currentEditor->GetText().compare(_("")))
+                {
+                    currentEditor->LoadFile(path);
+                    m_notebook->SetPageText(m_notebook->GetPageIndex(m_notebook->GetCurrentPage()), file);
+                    m_mgr.Update();
+                    return;
+                }
             }
+            
+            EditorWidget* editor = new EditorWidget(this);
+            editor->LoadFile(path);
+            
+            m_notebook->AddPage(editor, file, true);
+            
+            ProjectExplorer* project_explorer = dynamic_cast<ProjectExplorer*>(m_mgr.GetPane("pane_project").window);
+            
+            Project project;
+            project.SetName(dialog->GetFilename().ToStdString());
+            
+            OpenProjects.push_back(project);
+            project_explorer->AppendItem(project_explorer->GetRootItem(), file);
+            project_explorer->Update();
+            
+            m_mgr.Update();
         }
-
-        EditorWidget* editor = new EditorWidget(this);
-        editor->LoadFile(path);
-
-        m_notebook->AddPage(editor, file, true);
-
-        ProjectExplorer* project_explorer = dynamic_cast<ProjectExplorer*>(m_mgr.GetPane("pane_project").window);
-
-        Project project;
-        project.SetName(dialog->GetFilename().ToStdString());
-
-        OpenProjects.push_back(project);
-        project_explorer->AppendItem(project_explorer->GetRootItem(), file);
-        project_explorer->Update();
-
-        m_mgr.Update();
-    }
-
-    dialog->Destroy();
+        
+        dialog->Destroy();
+    });
 }
 
 void MainFrame::OnMenuSave(wxCommandEvent& e)
@@ -279,19 +283,22 @@ void MainFrame::OnMenuSaveAs(wxCommandEvent& WXUNUSED(e))
     wxFileDialog* dialog = new wxFileDialog(this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString,
         _("C++ Source Files(*.cpp, *.cxx)|*.cpp;*.cxx|C Source files(*.c)|*.c|C header files(*.h)|*.h"), wxFD_SAVE);
 
-    if (dialog->ShowModal() == wxID_OK)
+    SimplyCpp::UI::ShowWindowModalThenDo(dialog, [this, dialog] (int returnCode)
     {
-        wxString file = dialog->GetFilename();
-        wxString path = dialog->GetPath();
+        if (returnCode == wxID_OK)
+        {
+            wxString file = dialog->GetFilename();
+            wxString path = dialog->GetPath();
 
-        EditorWidget* currentEditor = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
-        currentEditor->SaveFile(path);
+            EditorWidget* currentEditor = static_cast<EditorWidget*>(m_notebook->GetCurrentPage());
+            currentEditor->SaveFile(path);
 
-        m_notebook->SetPageText(m_notebook->GetPageIndex(currentEditor), file);
-        m_mgr.Update();
-    }
+            m_notebook->SetPageText(m_notebook->GetPageIndex(currentEditor), file);
+            m_mgr.Update();
+        }
 
-    dialog->Destroy();
+        dialog->Destroy();
+    });
 }
 
 void MainFrame::OnMenuClose(wxCommandEvent& WXUNUSED(e))
