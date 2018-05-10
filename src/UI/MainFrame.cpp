@@ -6,7 +6,10 @@ using namespace SimplyCpp::Core;
 
 MainFrame::MainFrame() : wxFrame(NULL, wxID_ANY, _T("SimplyCpp"), wxDefaultPosition, wxSize(800, 600))
 {
+    #ifndef __WXMAC__
     SetIcon(wxICON(ID_ICON));
+    #endif
+
     m_mgr.SetManagedWindow(this);
 
     CreateMenuBar();
@@ -61,6 +64,7 @@ MainFrame::~MainFrame()
 {
     // Write to AppConfig
     AppConfig->Write(_("Layer.Perspective"), m_mgr.SavePerspective());
+    AppConfig->Flush();
 
     m_mgr.UnInit();
 }
@@ -172,16 +176,6 @@ void MainFrame::CreateMenuBar()
     menuBar->EnableTop(2, false);
 }
 
-void MainFrame::CreateToolBar()
-{
-    wxToolBar* toolBar = wxFrame::CreateToolBar();
-
-
-
-    toolBar->Realize();
-    SetToolBar(toolBar);
-}
-
 void MainFrame::OnEditorClose(wxAuiNotebookEvent& e)
 {
     EditorWidget* editorPage = static_cast<EditorWidget*>(m_notebook->GetPage(e.GetSelection()));
@@ -253,7 +247,7 @@ void MainFrame::OnMenuOpen(wxCommandEvent& WXUNUSED(e))
         m_notebook->AddPage(editor, file, true);
 
         ProjectExplorer* project_explorer = dynamic_cast<ProjectExplorer*>(m_mgr.GetPane("pane_project").window);
-        
+
         Project project;
         project.SetName(dialog->GetFilename().ToStdString());
 
@@ -444,7 +438,7 @@ void MainFrame::OnMenuTerminal(wxCommandEvent& WXUNUSED(e))
 #ifdef __WXMSW__
     terminalWidget->RunCommand("cmd /q", env);
 #elif __WXMAC__
-    terminalWidget->RunCommand("bash");
+    terminalWidget->RunCommand("/usr/bin/bash");
 #else
     terminalWidget->RunCommand("sh");
 #endif

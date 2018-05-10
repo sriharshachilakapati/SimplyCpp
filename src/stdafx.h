@@ -1,6 +1,11 @@
 #pragma once
 
 #include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+    #include <wx/wx.h>
+#endif
+
 #include <wx/stc/stc.h>
 #include <wx/aui/aui.h>
 #include <wx/config.h>

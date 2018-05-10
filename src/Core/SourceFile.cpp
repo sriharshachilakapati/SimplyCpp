@@ -1,4 +1,3 @@
-#pragma once
 #include "../stdafx.h"
 #include "SourceFile.h"
 
@@ -18,4 +17,3 @@ std::string SourceFile::GetFileName()
 {
     return m_filename;
 }
-

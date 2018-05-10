@@ -14,7 +14,11 @@ TerminalWidget::TerminalWidget(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxD
 
     m_inputCtrl->SetWindowStyle(wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB);
 
-    wxFont monospace = wxFont(10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_LIGHT, false, _("Consolas"));
+#ifdef __WXMAC__
+    wxFont monospace(13, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Monaco");
+#else
+    wxFont monospace(11, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
+#endif
     m_inputCtrl->SetFont(monospace);
     m_outputCtrl->SetFont(monospace);
     m_inputCtrl->Disable();
@@ -23,7 +27,7 @@ TerminalWidget::TerminalWidget(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxD
 
     wxBoxSizer* sizer2 = new wxBoxSizer(wxVERTICAL);
     sizer2->Add(m_outputCtrl, 1, wxEXPAND | wxALL);
-    sizer2->Add(m_inputCtrl, 0, wxALIGN_BOTTOM | wxEXPAND);
+    sizer2->Add(m_inputCtrl, 0, wxEXPAND);
 
     wxBitmap stop = wxArtProvider::GetBitmap(wxART_CROSS_MARK, wxART_TOOLBAR);
     wxBitmap restart = wxArtProvider::GetBitmap(wxART_REDO, wxART_TOOLBAR);

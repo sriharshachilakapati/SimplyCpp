@@ -21,7 +21,7 @@ void EditorWidget::InitEditor()
     SetScrollWidthTracking(true);
 
     SetLexer(wxSTC_LEX_CPP);
-    SetStyleBits(5);
+    //SetStyleBits(5);
     SetTabWidth(4);
     SetUseTabs(false);
     SetIndent(4);
@@ -63,7 +63,12 @@ void EditorWidget::InitEditor()
     SetIndentationGuides(wxSTC_IV_LOOKBOTH);
 
     // Fonts and styling
+#ifdef __WXMAC__
+    wxFont monospace(13, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Monaco");
+#else
     wxFont monospace(11, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
+#endif
+    
     StyleSetFont(wxSTC_STYLE_DEFAULT, monospace);
     StyleSetFont(wxSTC_C_WORD, monospace);
 
