@@ -5,8 +5,17 @@ namespace SimplyCpp
 {
     namespace UI
     {
-        template <typename Functor>
-        inline void ShowWindowModalThenDo(wxDialog *dlg, const Functor& onEndModal)
+        typedef std::function<void()> Callback;
+        typedef std::function<void(int)> ModalReturnCallback;
+        
+        const wxString FILE_SELECTOR_PROMPT_STRING =
+#ifdef __WXMAC__
+            wxEmptyString;
+#else
+            wxFileSelectorPromptStr;
+#endif
+        
+        inline void ShowWindowModalThenDo(wxDialog *dlg, const ModalReturnCallback& onEndModal)
         {
 #ifdef __WXMAC__
             dlg->ShowWindowModalThenDo(onEndModal);

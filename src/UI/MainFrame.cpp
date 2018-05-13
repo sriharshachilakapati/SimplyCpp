@@ -183,32 +183,49 @@ void MainFrame::OnEditorClose(wxAuiNotebookEvent& e)
 
     if (!editorPage->SavedOnce() || editorPage->CodeChanged())
     {
+        e.Veto();
+        
         wxMessageDialog* dialog = new wxMessageDialog(this,
             wxString::Format(_("Do you want to save %s? If not, all your work will be lost!"),
                 m_notebook->GetPageText(e.GetSelection())), _("SimplyCpp"), wxYES_NO | wxCANCEL);
-
-        switch (dialog->ShowModal())
+        
+        SimplyCpp::UI::ShowWindowModalThenDo(dialog, [this, dialog, e, editorPage] (int returnCode)
         {
-        case wxID_YES:
-            OnMenuSave(e);
-
-            // Only break if the file is not saved
-            // The user must have clicked on cancel button in save as box
-            if (!editorPage->CodeChanged())
-                break;
-
-        case wxID_CANCEL:
-            e.Veto();
             dialog->Destroy();
-            return;
-        }
-
-        dialog->Destroy();
+            
+            switch (returnCode)
+            {
+                case wxID_YES:
+                {
+                    wxCommandEvent nullEvent;
+                    int selection = e.GetSelection();
+                    
+                    OnMenuSave(nullEvent, [this, selection, editorPage]()
+                    {
+                        // Only close the editor if the file is saved. If not, then the user must have cancelled the
+                        // save from the save dialog box. In that case, just do nothing.
+                        if (!editorPage->CodeChanged())
+                        {
+                            m_notebook->DeletePage(selection);
+//                            m_notebook->RemovePage(selection);
+                        }
+                    });
+                    break;
+                }
+                    
+                case wxID_NO:
+                    m_notebook->DeletePage(e.GetSelection());
+//                    m_notebook->RemovePage(e.GetSelection());
+                    break;
+            }
+        });
     }
 }
 
-void MainFrame::OnWindowClose(wxCloseEvent& WXUNUSED(e))
+void MainFrame::OnWindowClose(wxCloseEvent& e)
 {
+    e.Veto();
+    
     wxCommandEvent nullEvent;
     OnMenuExit(nullEvent);
 }
@@ -216,14 +233,14 @@ void MainFrame::OnWindowClose(wxCloseEvent& WXUNUSED(e))
 void MainFrame::OnMenuNew(wxCommandEvent& WXUNUSED(e))
 {
     m_notebook->AddPage(new EditorWidget(this),
-        wxString::Format(_("Untitled%d"), m_notebook->GetPageCount() + 1));
+        wxString::Format(_("Untitled%d"), static_cast<int>(m_notebook->GetPageCount() + 1)));
 }
 
 void MainFrame::OnMenuOpen(wxCommandEvent& WXUNUSED(e))
 {
-    wxFileDialog* dialog = new wxFileDialog(this, _("Open File"), wxEmptyString, wxEmptyString,
+    wxFileDialog* dialog = new wxFileDialog(this, FILE_SELECTOR_PROMPT_STRING, wxEmptyString, wxEmptyString,
         _("C++ Source Files (*.cpp, *.cxx)|*.cpp;*.cxx|C Source files(*.c)|*.c|C header files(*.h)|*.h"), wxFD_OPEN);
-
+    
     SimplyCpp::UI::ShowWindowModalThenDo(dialog, [this, dialog] (int returnCode)
     {
         if (returnCode == wxID_OK)
@@ -265,7 +282,7 @@ void MainFrame::OnMenuOpen(wxCommandEvent& WXUNUSED(e))
     });
 }
 
-void MainFrame::OnMenuSave(wxCommandEvent& e)
+void MainFrame::OnMenuSave(wxCommandEvent& e, const Callback& callback)
 {
     if (m_notebook->GetPageCount() == 0)
         return;
@@ -275,15 +292,15 @@ void MainFrame::OnMenuSave(wxCommandEvent& e)
     if (currentEditor->SavedOnce())
         currentEditor->SaveFile();
     else
-        OnMenuSaveAs(e);
+        OnMenuSaveAs(e, callback);
 }
 
-void MainFrame::OnMenuSaveAs(wxCommandEvent& WXUNUSED(e))
+void MainFrame::OnMenuSaveAs(wxCommandEvent& WXUNUSED(e), const Callback& callback)
 {
-    wxFileDialog* dialog = new wxFileDialog(this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString,
+    wxFileDialog* dialog = new wxFileDialog(this, FILE_SELECTOR_PROMPT_STRING, wxEmptyString, wxEmptyString,
         _("C++ Source Files(*.cpp, *.cxx)|*.cpp;*.cxx|C Source files(*.c)|*.c|C header files(*.h)|*.h"), wxFD_SAVE);
 
-    SimplyCpp::UI::ShowWindowModalThenDo(dialog, [this, dialog] (int returnCode)
+    SimplyCpp::UI::ShowWindowModalThenDo(dialog, [this, dialog, callback] (int returnCode)
     {
         if (returnCode == wxID_OK)
         {
@@ -295,6 +312,8 @@ void MainFrame::OnMenuSaveAs(wxCommandEvent& WXUNUSED(e))
 
             m_notebook->SetPageText(m_notebook->GetPageIndex(currentEditor), file);
             m_mgr.Update();
+            
+            callback();
         }
 
         dialog->Destroy();
@@ -310,37 +329,38 @@ void MainFrame::OnMenuClose(wxCommandEvent& WXUNUSED(e))
 
 void MainFrame::OnMenuExit(wxCommandEvent& e)
 {
+    auto exitHandler = [this]()
+    {
+        static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window)->TerminateProcess();
+        Destroy();
+    };
+    
+    int unsavedEditors = 0;
+    
     for (unsigned int i = 0; i < m_notebook->GetPageCount(); i++)
     {
         EditorWidget* editorPage = static_cast<EditorWidget*>(m_notebook->GetPage(i));
 
         if (!editorPage->SavedOnce() || editorPage->CodeChanged())
-        {
-            wxMessageDialog* dialog = new wxMessageDialog(this,
-                wxString::Format(_("Do you want to save %s? If not, all your work will be lost!"), m_notebook->GetPageText(i)),
-                _("SimplyCpp"), wxYES_NO | wxCANCEL);
-
-            switch (dialog->ShowModal())
-            {
-            case wxID_YES:
-                OnMenuSave(e);
-
-                // Only break if the file is not saved
-                // The user must have clicked on cancel button in save as box
-                if (!editorPage->CodeChanged())
-                    break;
-
-            case wxID_CANCEL:
-                dialog->Destroy();
-                return;
-            }
-
-            dialog->Destroy();
-        }
+            unsavedEditors++;
     }
-
-    static_cast<TerminalWidget*>(m_mgr.GetPane("pane_output").window)->TerminateProcess();
-    Destroy();
+    
+    if (unsavedEditors > 0)
+    {
+        wxMessageDialog* dialog = new wxMessageDialog(this,
+              wxString::Format(_("You have %d unsaved document(s) open! Are you sure you want to exit without saving?"), unsavedEditors),
+              _("SimplyCpp"), wxYES_NO);
+        
+        SimplyCpp::UI::ShowWindowModalThenDo(dialog, [dialog, exitHandler] (int returnCode)
+        {
+            dialog->Destroy();
+            
+            if (returnCode == wxID_YES)
+                exitHandler();
+        });
+    }
+    else
+        exitHandler();
 }
 
 void MainFrame::OnMenuCut(wxCommandEvent& WXUNUSED(e))

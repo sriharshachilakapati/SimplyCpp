@@ -1,4 +1,5 @@
 #pragma once
+#include "Utils.h"
 #include "EditorWidget.h"
 #include "TerminalWidget.h"
 #include "ProjectExplorer.h"
@@ -27,8 +28,13 @@ namespace SimplyCpp
             void OnWindowClose(wxCloseEvent& e);
             void OnMenuNew(wxCommandEvent& e);
             void OnMenuOpen(wxCommandEvent& e);
-            void OnMenuSave(wxCommandEvent& e);
-            void OnMenuSaveAs(wxCommandEvent& e);
+            
+            void OnMenuSave(wxCommandEvent& e, const Callback& callback);
+            void OnMenuSave(wxCommandEvent& e) { OnMenuSave(e, [](){}); }
+            
+            void OnMenuSaveAs(wxCommandEvent& e, const Callback& callback);
+            void OnMenuSaveAs(wxCommandEvent& e) { OnMenuSaveAs(e, [](){}); }
+            
             void OnMenuClose(wxCommandEvent& e);
             void OnMenuExit(wxCommandEvent& e);
             void OnMenuCut(wxCommandEvent& e);

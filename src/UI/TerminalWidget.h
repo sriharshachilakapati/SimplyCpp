@@ -1,10 +1,10 @@
 #pragma once
+#include "Utils.h"
+
 namespace SimplyCpp
 {
     namespace UI
     {
-        typedef std::function<void()> Callback;
-
         class TerminalWidget : public wxPanel
         {
         public:
