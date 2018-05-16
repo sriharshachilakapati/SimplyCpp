@@ -465,7 +465,7 @@ void MainFrame::OnMenuTerminal(wxCommandEvent& WXUNUSED(e))
 #ifdef __WXMSW__
     terminalWidget->RunCommand("cmd /q", env);
 #elif __WXMAC__
-    terminalWidget->RunCommand("/usr/bin/bash");
+    terminalWidget->RunCommand("/bin/sh -c \"exec $SHELL -l -i\"");
 #else
     terminalWidget->RunCommand("sh");
 #endif
